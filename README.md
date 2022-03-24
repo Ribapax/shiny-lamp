@@ -20,10 +20,7 @@ Requisitos do código:
     Usar alocação de memória dinâmica
     Usar estruturas
     Compilar com o flag -Wall sem erros nem avisos
-    Usar o sistema Make para compilação, com ao menos os seguintes alvos:
-        all: compila e gera o executável
-        clean: remove os arquivos temporários (mantém o executável)
-        purge: remove tudo, deixando somente os fontes
+    
     Todos os arquivos que não forem código-fonte (imagens, sons, fontes, mapas, …) devem ser colocados em um subdiretório resources/ dentro do diretório do código.
 
 Critérios de avaliação
@@ -31,3 +28,13 @@ Critérios de avaliação
     cumprimento dos requisitos acima
     fidelidade ao jogo original
     qualidade do código (estrutura, clareza, comentários, endentação)
+
+sites de ducumentação
+ http://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico#fn__2
+ https://www.youtube.com/playlist?list=PLWKjhJtqVAbluXJKKbCIb4xd7fcRkpzoz
+ https://github.com/liballeg/allegro_wiki/wiki/Allegro-Vivace%3A-Graphics
+ https://web.archive.org/web/20161205173118/http://www.kathekonta.com/rlguide/
+ https://gameprogrammingpatterns.com/game-loop.html
+ https://www.youtube.com/watch?v=NHq58TlWLe0&list=PLXO4S2lM3TR5RnKwnB5c2SR5EDmwLb-mR
+ https://opengameart.org/
+ http://github.grumdrig.com/jsfxr/

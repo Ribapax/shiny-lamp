@@ -6,6 +6,8 @@ PROJ_NAME=jogo
 # .c files
 C_SOURCE=$(wildcard ./source/*.c)
 
+EOPTION = `pkg-config allegro-5 allegro_font-5 allegro_image-5 allegro_primitives-5 --libs --cflags`
+
 # .h files
 H_SOURCE=$(wildcard ./source/*.h)
 
@@ -29,18 +31,18 @@ all: objFolder $(PROJ_NAME)
 
 $(PROJ_NAME): $(OBJ)
 	@ echo 'Building binary using GCC linker: $@'
-	$(CC) $^ -o $@
+	$(CC) $^ -o $@ $(EOPTION) 
 	@ echo 'Finished building binary: $@'
 	@ echo ' '
 
 ./objects/%.o: ./source/%.c ./source/%.h
 	@ echo 'Building target using GCC compiler: $<'
-	$(CC) $< $(CC_FLAGS) -o $@
+	$(CC) $< $(CC_FLAGS) -o $@ 
 	@ echo ' '
 
 ./objects/main.o: ./source/main.c $(H_SOURCE)
 	@ echo 'Building target using GCC compiler: $<'
-	$(CC) $< $(CC_FLAGS) -o $@
+	$(CC) $< $(CC_FLAGS) -o $@ $(EOPTION)
 	@ echo ' '
 
 objFolder:
