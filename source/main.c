@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_font.h>
-#include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 
 void must_init(bool test, const char *description)
 {
@@ -17,25 +18,36 @@ int main()
 {
     must_init(al_init(), "allegro");
     must_init(al_install_keyboard(), "keyboard");
-    must_init(al_init_primitives_addon(), "primitives");
 
     ALLEGRO_TIMER* timer = al_create_timer(1.0 / 30.0);
     must_init(timer, "timer");
 
     ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
     must_init(queue, "queue");
+
     al_set_new_display_option(ALLEGRO_SAMPLE_BUFFERS, 1, ALLEGRO_SUGGEST);
     al_set_new_display_option(ALLEGRO_SAMPLES, 8, ALLEGRO_SUGGEST);
     al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
+
     ALLEGRO_DISPLAY* disp = al_create_display(640, 480);
     must_init(disp, "display");
 
     ALLEGRO_FONT* font = al_create_builtin_font();
     must_init(font, "font");
 
-    must_init(al_init_image_addon(), "image addon");
-    ALLEGRO_BITMAP* mysha = al_load_bitmap("./resources/mysha.png");
-    must_init(mysha, "mysha");
+    must_init(al_init_primitives_addon(), "primitives");
+
+    must_init(al_install_audio(), "audio");
+    must_init(al_init_acodec_addon(), "audio codecs");
+    must_init(al_reserve_samples(16), "reserve samples");
+
+    ALLEGRO_SAMPLE* elephant = al_load_sample("./resources/audio_elephant.wav");
+    must_init(elephant, "elephant");
+
+    ALLEGRO_AUDIO_STREAM* music = al_load_audio_stream("./resources/music.opus", 2, 2048);
+    must_init(music, "music");
+    al_set_audio_stream_playmode(music, ALLEGRO_PLAYMODE_LOOP);
+    al_attach_audio_stream_to_mixer(music, al_get_default_mixer());
 
     al_register_event_source(queue, al_get_keyboard_event_source());
     al_register_event_source(queue, al_get_display_event_source(disp));
@@ -58,6 +70,11 @@ int main()
                 break;
 
             case ALLEGRO_EVENT_KEY_DOWN:
+                if(event.keyboard.keycode == ALLEGRO_KEY_E)
+                    al_play_sample(elephant, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                if(event.keyboard.keycode != ALLEGRO_KEY_ESCAPE)
+                    break;
+
             case ALLEGRO_EVENT_DISPLAY_CLOSE:
                 done = true;
                 break;
@@ -69,21 +86,16 @@ int main()
         if(redraw && al_is_event_queue_empty(queue))
         {
             al_clear_to_color(al_map_rgb(0, 0, 0));
-            al_draw_text(font, al_map_rgb(255, 255, 255), 0, 0, 0, "Hello world!");
+            al_draw_text(font, al_map_rgb(255, 255, 255), 640/2, 480/2, ALLEGRO_ALIGN_CENTER, "Knock knock, it's Nelly");
 
-            al_draw_bitmap(mysha, 100, 100, 0);
-            al_draw_filled_triangle(35, 350, 85, 375, 35, 400, al_map_rgb_f(0, 1, 0));
-            al_draw_filled_rectangle(240, 260, 340, 340, al_map_rgba_f(0, 0, 0.5, 0.5));
-            al_draw_circle(450, 370, 30, al_map_rgb_f(1, 0, 1), 2);
-            al_draw_line(440, 110, 460, 210, al_map_rgb_f(1, 0, 0), 1);
-            al_draw_line(500, 220, 570, 200, al_map_rgb_f(1, 1, 0), 1);
             al_flip_display();
 
             redraw = false;
         }
     }
 
-    al_destroy_bitmap(mysha);
+    al_destroy_audio_stream(music);
+    al_destroy_sample(elephant);
     al_destroy_font(font);
     al_destroy_display(disp);
     al_destroy_timer(timer);

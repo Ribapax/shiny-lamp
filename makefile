@@ -6,7 +6,7 @@ PROJ_NAME=jogo
 # .c files
 C_SOURCE=$(wildcard ./source/*.c)
 
-EOPTION = `pkg-config allegro-5 allegro_font-5 allegro_image-5 allegro_primitives-5 --libs --cflags`
+EOPTION = `pkg-config allegro-5 allegro_font-5 allegro_image-5 allegro_primitives-5 allegro_audio-5 allegro_acodec-5 --libs --cflags`
 
 # .h files
 H_SOURCE=$(wildcard ./source/*.h)
