@@ -52,10 +52,10 @@ bool collide(int ax1, int ay1, int ax2, int ay2, int bx1, int by1, int bx2, int 
 
 // --- display ---
 
-#define BUFFER_W 320
-#define BUFFER_H 240
+#define BUFFER_W 640
+#define BUFFER_H 368
 
-#define DISP_SCALE 3
+#define DISP_SCALE 2
 #define DISP_W (BUFFER_W * DISP_SCALE)
 #define DISP_H (BUFFER_H * DISP_SCALE)
 
@@ -132,6 +132,13 @@ void keyboard_update(ALLEGRO_EVENT* event)
 #define SHIP_SHOT_W 2
 #define SHIP_SHOT_H 9
 
+#define WALL_W 16
+#define WALL_H 16
+
+#define JOGADOR_W 16
+#define JOGADOR_H 16
+
+
 #define LIFE_W 6
 #define LIFE_H 6
 
@@ -168,6 +175,17 @@ typedef struct SPRITES
 
     ALLEGRO_BITMAP* powerup[4];
 } SPRITES;
+
+typedef struct SPRITESBD
+{
+    ALLEGRO_BITMAP* _sheet;
+
+    ALLEGRO_BITMAP* wall;
+    ALLEGRO_BITMAP* jogador[7];
+
+} SPRITESBD;
+
+SPRITESBD spritesbd;
 SPRITES sprites;
 
 ALLEGRO_BITMAP* sprite_grab(int x, int y, int w, int h)
@@ -177,10 +195,34 @@ ALLEGRO_BITMAP* sprite_grab(int x, int y, int w, int h)
     return sprite;
 }
 
+ALLEGRO_BITMAP* sprite_grabBd(int x, int y, int w, int h)
+{
+    ALLEGRO_BITMAP* sprite = al_create_sub_bitmap(spritesbd._sheet, x, y, w, h);
+    must_init(sprite, "sprite grab");
+    return sprite;
+}
+
+
+
+
 void sprites_init()
 {
     sprites._sheet = al_load_bitmap("resources/spritesheet.png");
     must_init(sprites._sheet, "spritesheet");
+
+    spritesbd._sheet = al_load_bitmap("resources/spritesheetBD.png");
+    must_init(spritesbd._sheet, "spritesheet");
+
+    spritesbd.wall = sprite_grabBd(0, 48, WALL_W, WALL_H);
+
+    spritesbd.jogador[0] = sprite_grabBd(0, 0, JOGADOR_W, JOGADOR_H);
+    spritesbd.jogador[1] = sprite_grabBd(16, 0, JOGADOR_W, JOGADOR_H);
+    spritesbd.jogador[2] = sprite_grabBd(32, 0, JOGADOR_W, JOGADOR_H);
+    spritesbd.jogador[3] = sprite_grabBd(48, 0, JOGADOR_W, JOGADOR_H);
+    spritesbd.jogador[4] = sprite_grabBd(64, 0, JOGADOR_W, JOGADOR_H);
+    spritesbd.jogador[5] = sprite_grabBd(80, 0, JOGADOR_W, JOGADOR_H);
+    spritesbd.jogador[6] = sprite_grabBd(96, 0, JOGADOR_W, JOGADOR_H);
+
 
     sprites.ship = sprite_grab(0, 0, SHIP_W, SHIP_H);
 
@@ -607,6 +649,36 @@ void ship_draw()
     al_draw_bitmap(sprites.ship, ship.x, ship.y, 0);
 }
 
+void wall_draw()
+{
+    int espaco = WALL_H; // espaço no inicio da tela onde fica HUD do jogador
+    for(int i=espaco; i <BUFFER_H;i+=WALL_H){
+        for(int j=0; j <BUFFER_W;j+=WALL_W){
+            if(i == espaco || j == 0 || i== BUFFER_H-WALL_H || j== BUFFER_W-WALL_W)
+                al_draw_bitmap(spritesbd.wall, j, i, 0);
+            else
+                al_draw_bitmap(spritesbd.jogador[i%7], j, i, 0);
+        }
+    }
+}
+
+// void jogador_draw(){
+
+
+//         int frame_display = (shots[i].frame / 2) % 2;
+
+//         if(shots[i].ship)
+//             al_draw_bitmap(sprites.ship_shot[frame_display], shots[i].x, shots[i].y, 0);
+//         else // alien
+//         {
+//             ALLEGRO_COLOR tint =
+//                 frame_display
+//                 ? al_map_rgb_f(1, 1, 1)
+//                 : al_map_rgb_f(0.5, 0.5, 0.5)
+//             ;
+//             al_draw_tinted_bitmap(sprites.alien_shot, tint, shots[i].x, shots[i].y, 0);
+//         }
+// }
 
 // --- aliens ---
 
@@ -873,6 +945,9 @@ void hud_draw()
     int spacing = LIFE_W + 1;
     for(int i = 0; i < ship.lives; i++)
         al_draw_bitmap(sprites.life, 1 + (i * spacing), 10, 0);
+        //al_draw_bitmap(spritesbd.wall, 50, 10, 0);
+    
+
 
     if(ship.lives < 0)
         al_draw_text(
@@ -882,6 +957,8 @@ void hud_draw()
             ALLEGRO_ALIGN_CENTER,
             "G A M E  O V E R"
         );
+
+    
 }
 
 
@@ -974,6 +1051,7 @@ int main()
             shots_draw();
             fx_draw();
             ship_draw();
+            wall_draw();
 
             hud_draw();
 
