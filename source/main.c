@@ -1,3 +1,11 @@
+/* this is a complete copy of the source from allegro vivace's 'gameplay' section.
+ *
+ * for gcc users, it can be compiled & run with:
+ *
+ * gcc game.c -o game $(pkg-config allegro-5 allegro_font-5 allegro_primitives-5 allegro_audio-5 allegro_acodec-5 allegro_image-5 --libs --cflags)
+ * ./game
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <allegro5/allegro5.h>
@@ -6,6 +14,9 @@
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
 #include <allegro5/allegro_image.h>
+
+
+// --- general ---
 
 long frames;
 long score;
@@ -37,6 +48,9 @@ bool collide(int ax1, int ay1, int ax2, int ay2, int bx1, int by1, int bx2, int 
 
     return true;
 }
+
+
+// --- display ---
 
 #define BUFFER_W 320
 #define BUFFER_H 240
@@ -79,6 +93,9 @@ void disp_post_draw()
     al_flip_display();
 }
 
+
+// --- keyboard ---
+
 #define KEY_SEEN     1
 #define KEY_RELEASED 2
 unsigned char key[ALLEGRO_KEY_MAX];
@@ -105,6 +122,9 @@ void keyboard_update(ALLEGRO_EVENT* event)
             break;
     }
 }
+
+
+// --- sprites ---
 
 #define SHIP_W 12
 #define SHIP_H 13
@@ -159,7 +179,7 @@ ALLEGRO_BITMAP* sprite_grab(int x, int y, int w, int h)
 
 void sprites_init()
 {
-    sprites._sheet = al_load_bitmap("./resources/spritesheet.png");
+    sprites._sheet = al_load_bitmap("resources/spritesheet.png");
     must_init(sprites._sheet, "spritesheet");
 
     sprites.ship = sprite_grab(0, 0, SHIP_W, SHIP_H);
@@ -218,6 +238,9 @@ void sprites_deinit()
     al_destroy_bitmap(sprites._sheet);
 }
 
+
+// --- audio ---
+
 ALLEGRO_SAMPLE* sample_shot;
 ALLEGRO_SAMPLE* sample_explode[2];
 
@@ -227,12 +250,12 @@ void audio_init()
     al_init_acodec_addon();
     al_reserve_samples(128);
 
-    sample_shot = al_load_sample("./resources/shot.flac");
+    sample_shot = al_load_sample("resources/shot.flac");
     must_init(sample_shot, "shot sample");
 
-    sample_explode[0] = al_load_sample("./resources/explode1.flac");
+    sample_explode[0] = al_load_sample("resources/explode1.flac");
     must_init(sample_explode[0], "explode[0] sample");
-    sample_explode[1] = al_load_sample("./resources/explode2.flac");
+    sample_explode[1] = al_load_sample("resources/explode2.flac");
     must_init(sample_explode[1], "explode[1] sample");
 }
 
@@ -242,6 +265,9 @@ void audio_deinit()
     al_destroy_sample(sample_explode[0]);
     al_destroy_sample(sample_explode[1]);
 }
+
+
+// --- fx ---
 
 typedef struct FX
 {
@@ -314,6 +340,9 @@ void fx_draw()
         al_draw_bitmap(bmp, x, y, 0);
     }
 }
+
+
+// --- shots ---
 
 typedef struct SHOT
 {
@@ -480,6 +509,9 @@ void shots_draw()
     }
 }
 
+
+// --- ship ---
+
 #define SHIP_SPEED 3
 #define SHIP_MAX_X (BUFFER_W - SHIP_W)
 #define SHIP_MAX_Y (BUFFER_H - SHIP_H)
@@ -574,6 +606,9 @@ void ship_draw()
 
     al_draw_bitmap(sprites.ship, ship.x, ship.y, 0);
 }
+
+
+// --- aliens ---
 
 typedef enum ALIEN_TYPE
 {
@@ -747,6 +782,9 @@ void aliens_draw()
     }
 }
 
+
+// --- stars ---
+
 typedef struct STAR
 {
     float y;
@@ -788,6 +826,9 @@ void stars_draw()
         star_x += 2;
     }
 }
+
+
+// --- hud ---
 
 ALLEGRO_FONT* font;
 long score_display;
@@ -842,6 +883,9 @@ void hud_draw()
             "G A M E  O V E R"
         );
 }
+
+
+// --- main ---
 
 int main()
 {
