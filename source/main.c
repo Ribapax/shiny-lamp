@@ -183,6 +183,8 @@ typedef struct SPRITESBD
     ALLEGRO_BITMAP* wall;
     ALLEGRO_BITMAP* jogador[7];
 
+    ALLEGRO_BITMAP* dirt;
+
 } SPRITESBD;
 
 SPRITESBD spritesbd;
@@ -214,6 +216,8 @@ void sprites_init()
     must_init(spritesbd._sheet, "spritesheet");
 
     spritesbd.wall = sprite_grabBd(0, 48, WALL_W, WALL_H);
+
+    spritesbd.dirt = sprite_grabBd(48, 48, WALL_W, WALL_H);
 
     spritesbd.jogador[0] = sprite_grabBd(0, 0, JOGADOR_W, JOGADOR_H);
     spritesbd.jogador[1] = sprite_grabBd(16, 0, JOGADOR_W, JOGADOR_H);
@@ -558,6 +562,9 @@ void shots_draw()
 #define SHIP_MAX_X (BUFFER_W - SHIP_W)
 #define SHIP_MAX_Y (BUFFER_H - SHIP_H)
 
+#define PLAYER_MAX_X (BUFFER_W - 2*WALL_W)
+#define PLAYER_MAX_Y (BUFFER_H - 2*WALL_H)
+
 typedef struct SHIP
 {
     int x, y;
@@ -656,11 +663,153 @@ void wall_draw()
         for(int j=0; j <BUFFER_W;j+=WALL_W){
             if(i == espaco || j == 0 || i== BUFFER_H-WALL_H || j== BUFFER_W-WALL_W)
                 al_draw_bitmap(spritesbd.wall, j, i, 0);
-            else
-                al_draw_bitmap(spritesbd.jogador[i%7], j, i, 0);
+            // else
+            //     al_draw_bitmap(spritesbd.dirt, j, i, 0);
         }
     }
 }
+
+
+
+typedef struct DIRT
+{
+    int x, y;
+    //int frame;
+    //bool ship;
+    bool used;
+} DIRT;
+
+
+#define DIRTS_N 760
+DIRT dirts[DIRTS_N];
+
+void dirt_init()
+{   
+    int espaco = WALL_H;
+    int c=0;
+    
+    for(int i=32; i <BUFFER_H-16;i+=WALL_H){
+        for(int j=16; j <BUFFER_W-16;j+=WALL_W){
+            if(!(i == 16 || j == 0 || i== BUFFER_H-WALL_H || j== BUFFER_W-WALL_W)){
+                dirts[c].x=j;
+                dirts[c].y=i;
+                dirts[c].used = false;
+                c++;
+            }
+
+        }
+    }
+}
+void dirt_draw(){
+    //int espaco = WALL_H;
+    for(int i=0; i<DIRTS_N;i++){
+        if(dirts[i].used == false)
+            al_draw_bitmap(spritesbd.dirt,dirts[i].x,dirts[i].y, 0);
+    }
+}
+
+void dirt_collide(int x, int y){
+    for(int i=0; i<DIRTS_N;i++){
+        if(dirts[i].x == x && dirts[i].y == y)
+            dirts[i].used= true;
+    }
+}
+
+typedef struct PLAYER
+{
+    int x, y;
+    int frame;
+    //bool ship;
+    //bool used;
+} PLAYER;
+
+PLAYER player;
+
+
+
+void player_init()
+{
+    player.x = 32;
+    player.y = 32;
+    player.frame = 0;
+    //player.shot_timer = 0;
+    //player.lives = 3;
+    //player.respawn_timer = 0;
+    //player.invincible_timer = 120;
+}
+void player_update()
+{
+
+
+    if(key[ALLEGRO_KEY_LEFT])
+        player.x -= 16;
+    if(key[ALLEGRO_KEY_RIGHT])
+        player.x += 16;
+    if(key[ALLEGRO_KEY_UP])
+        player.y -= 16;
+    if(key[ALLEGRO_KEY_DOWN])
+        player.y += 16;
+
+    if(player.x < 16)
+        player.x = 16;
+    if(player.y < 32)
+        player.y = 32;
+
+    if(player.x > PLAYER_MAX_X)
+        player.x = PLAYER_MAX_X;
+    if(player.y > PLAYER_MAX_Y)
+        player.y = PLAYER_MAX_Y;
+
+    dirt_collide(player.x,player.y);
+    // if(player.invincible_timer)
+    //     player.invincible_timer--;
+    // else
+    // {
+    //     if(shots_collide(true, player.x, player.y, player_W, player_H))
+    //     {
+    //         int x = player.x + (player_W / 2);
+    //         int y = player.y + (player_H / 2);
+    //         fx_add(false, x, y);
+    //         fx_add(false, x+4, y+2);
+    //         fx_add(false, x-2, y-4);
+    //         fx_add(false, x+1, y-5);
+
+    //         player.lives--;
+    //         player.respawn_timer = 90;
+    //         player.invincible_timer = 180;
+    //     }
+    // }
+
+    // if(player.shot_timer)
+    //     player.shot_timer--;
+    // else if(key[ALLEGRO_KEY_X])
+    // {
+    //     int x = player.x + (player_W / 2);
+    //     if(shots_add(true, false, x, player.y))
+    //         player.shot_timer = 5;
+    // }
+    player.frame++;
+}
+
+void player_draw(){
+
+        int frame_display = (player.frame / 10) % 7;
+
+        //if(shots[i].ship)
+        al_draw_bitmap(spritesbd.jogador[frame_display], player.x, player.y, 0);
+        //al_draw_bitmap(sprites.ship_shot[frame_display], shots[i].x, shots[i].y, 0);
+        /* else // alien
+        {
+            ALLEGRO_COLOR tint =
+                frame_display
+                ? al_map_rgb_f(1, 1, 1)
+                : al_map_rgb_f(0.5, 0.5, 0.5)
+            ;
+            al_draw_tinted_bitmap(sprites.alien_shot, tint, shots[i].x, shots[i].y, 0);
+        } */
+}
+
+
 
 // void jogador_draw(){
 
@@ -997,6 +1146,7 @@ int main()
     keyboard_init();
     fx_init();
     shots_init();
+    dirt_init();
     ship_init();
     aliens_init();
     stars_init();
@@ -1020,6 +1170,7 @@ int main()
                 fx_update();
                 shots_update();
                 stars_update();
+                player_update();
                 ship_update();
                 aliens_update();
                 hud_update();
@@ -1052,6 +1203,8 @@ int main()
             fx_draw();
             ship_draw();
             wall_draw();
+            dirt_draw();
+            player_draw();
 
             hud_draw();
 
