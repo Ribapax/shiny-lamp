@@ -20,6 +20,7 @@
 
 long frames;
 long score;
+long score_bd;
 
 void must_init(bool test, const char *description)
 {
@@ -135,6 +136,9 @@ void keyboard_update(ALLEGRO_EVENT* event)
 #define WALL_W 16
 #define WALL_H 16
 
+#define CRISTAL_W 16
+#define CRISTAL_H 16
+
 #define JOGADOR_W 16
 #define JOGADOR_H 16
 
@@ -182,6 +186,7 @@ typedef struct SPRITESBD
 
     ALLEGRO_BITMAP* wall;
     ALLEGRO_BITMAP* jogador[7];
+    ALLEGRO_BITMAP* cristal[8];
 
     ALLEGRO_BITMAP* dirt;
 
@@ -226,6 +231,15 @@ void sprites_init()
     spritesbd.jogador[4] = sprite_grabBd(64, 0, JOGADOR_W, JOGADOR_H);
     spritesbd.jogador[5] = sprite_grabBd(80, 0, JOGADOR_W, JOGADOR_H);
     spritesbd.jogador[6] = sprite_grabBd(96, 0, JOGADOR_W, JOGADOR_H);
+
+    spritesbd.cristal[0] = sprite_grabBd(0, 64,  CRISTAL_W, CRISTAL_H);
+    spritesbd.cristal[1] = sprite_grabBd(0, 80, CRISTAL_W, CRISTAL_H);
+    spritesbd.cristal[2] = sprite_grabBd(0, 96, CRISTAL_W, CRISTAL_H);
+    spritesbd.cristal[3] = sprite_grabBd(0, 112, CRISTAL_W, CRISTAL_H);
+    spritesbd.cristal[4] = sprite_grabBd(16, 64, CRISTAL_W, CRISTAL_H);
+    spritesbd.cristal[5] = sprite_grabBd(16, 80, CRISTAL_W, CRISTAL_H);
+    spritesbd.cristal[6] = sprite_grabBd(16, 96, CRISTAL_W, CRISTAL_H);
+    spritesbd.cristal[7] = sprite_grabBd(16, 112, CRISTAL_W, CRISTAL_H);
 
 
     sprites.ship = sprite_grab(0, 0, SHIP_W, SHIP_H);
@@ -671,6 +685,60 @@ void wall_draw()
 
 
 
+typedef struct CRISTAL
+{
+    int x, y;
+    int frame;
+    //bool ship;
+    bool used;
+} CRISTAL;
+
+#define CRISTAL_N 760
+CRISTAL cristals[CRISTAL_N];
+
+void cristal_init()
+{   
+    int espaco = WALL_H;
+    int c=0;
+    
+    for(int i=32; i <BUFFER_H-16;i+=WALL_H){
+        for(int j=16; j <BUFFER_W-16;j+=WALL_W){
+            if(!(i == 16 || j == 0 || i== BUFFER_H-WALL_H || j== BUFFER_W-WALL_W)){
+                cristals[c].x=j;
+                cristals[c].y=i;
+                cristals[c].used = false;
+                cristals[c].frame = 0;
+                
+                c++;
+            }
+
+        }
+    }
+}
+void cristal_draw(){
+    //int espaco = WALL_H;
+    int frame_display ;
+    
+    for(int i=0; i<CRISTAL_N;i++){
+        if(cristals[i].used == false){
+            frame_display = (cristals[i].frame / 5) % 8;
+            al_draw_bitmap(spritesbd.cristal[frame_display], cristals[i].x, cristals[i].y, 0);
+            cristals[i].frame++;
+        }
+        // al_draw_bitmap(spritesbd.dirt,dirts[i].x,dirts[i].y, 0);
+    }
+}
+
+void cristal_collide(int x, int y){
+    for(int i=0; i<CRISTAL_N;i++){
+        if(cristals[i].x == x && cristals[i].y == y){
+            cristals[i].used= true;
+            score= score+200;
+        }
+    }
+}
+
+
 typedef struct DIRT
 {
     int x, y;
@@ -739,15 +807,15 @@ void player_init()
 }
 void player_update()
 {
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
 
     if(key[ALLEGRO_KEY_LEFT])
         player.x -= 16;
-    if(key[ALLEGRO_KEY_RIGHT])
+    else if(key[ALLEGRO_KEY_RIGHT])
         player.x += 16;
-    if(key[ALLEGRO_KEY_UP])
+    else if(key[ALLEGRO_KEY_UP])
         player.y -= 16;
-    if(key[ALLEGRO_KEY_DOWN])
+    else if(key[ALLEGRO_KEY_DOWN])
         player.y += 16;
 
     if(player.x < 16)
@@ -761,6 +829,7 @@ void player_update()
         player.y = PLAYER_MAX_Y;
 
     dirt_collide(player.x,player.y);
+    cristal_collide(player.x,player.y);
     // if(player.invincible_timer)
     //     player.invincible_timer--;
     // else
@@ -1092,6 +1161,7 @@ void hud_draw()
     );
 
     int spacing = LIFE_W + 1;
+
     for(int i = 0; i < ship.lives; i++)
         al_draw_bitmap(sprites.life, 1 + (i * spacing), 10, 0);
         //al_draw_bitmap(spritesbd.wall, 50, 10, 0);
@@ -1150,6 +1220,7 @@ int main()
     ship_init();
     aliens_init();
     stars_init();
+    cristal_init();
 
     frames = 0;
     score = 0;
@@ -1173,11 +1244,6 @@ int main()
                 player_update();
                 ship_update();
                 aliens_update();
-                hud_update();
-
-                if(key[ALLEGRO_KEY_ESCAPE])
-                    done = true;
-
                 redraw = true;
                 frames++;
                 break;
@@ -1203,7 +1269,8 @@ int main()
             fx_draw();
             ship_draw();
             wall_draw();
-            dirt_draw();
+            //dirt_draw();
+            cristal_draw();
             player_draw();
 
             hud_draw();
