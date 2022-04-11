@@ -186,6 +186,8 @@ typedef struct SPRITESBD
 
     ALLEGRO_BITMAP* wall;
     ALLEGRO_BITMAP* jogador[7];
+    ALLEGRO_BITMAP* jogadorDir[7];
+    ALLEGRO_BITMAP* jogadorEsq[7];
     ALLEGRO_BITMAP* cristal[8];
 
     ALLEGRO_BITMAP* dirt;
@@ -231,6 +233,22 @@ void sprites_init()
     spritesbd.jogador[4] = sprite_grabBd(64, 0, JOGADOR_W, JOGADOR_H);
     spritesbd.jogador[5] = sprite_grabBd(80, 0, JOGADOR_W, JOGADOR_H);
     spritesbd.jogador[6] = sprite_grabBd(96, 0, JOGADOR_W, JOGADOR_H);
+    
+    spritesbd.jogadorEsq[0] = sprite_grabBd(0, 16, JOGADOR_W, JOGADOR_H);
+    spritesbd.jogadorEsq[1] = sprite_grabBd(16, 16, JOGADOR_W, JOGADOR_H);
+    spritesbd.jogadorEsq[2] = sprite_grabBd(32, 16, JOGADOR_W, JOGADOR_H);
+    spritesbd.jogadorEsq[3] = sprite_grabBd(48, 16, JOGADOR_W, JOGADOR_H);
+    spritesbd.jogadorEsq[4] = sprite_grabBd(64, 16, JOGADOR_W, JOGADOR_H);
+    spritesbd.jogadorEsq[5] = sprite_grabBd(80, 16, JOGADOR_W, JOGADOR_H);
+    spritesbd.jogadorEsq[6] = sprite_grabBd(96, 16, JOGADOR_W, JOGADOR_H);
+    
+    spritesbd.jogadorDir[0] = sprite_grabBd(0, 32, JOGADOR_W, JOGADOR_H);
+    spritesbd.jogadorDir[1] = sprite_grabBd(16, 32, JOGADOR_W, JOGADOR_H);
+    spritesbd.jogadorDir[2] = sprite_grabBd(32, 32, JOGADOR_W, JOGADOR_H);
+    spritesbd.jogadorDir[3] = sprite_grabBd(48, 32, JOGADOR_W, JOGADOR_H);
+    spritesbd.jogadorDir[4] = sprite_grabBd(64, 32, JOGADOR_W, JOGADOR_H);
+    spritesbd.jogadorDir[5] = sprite_grabBd(80, 32, JOGADOR_W, JOGADOR_H);
+    spritesbd.jogadorDir[6] = sprite_grabBd(96, 32, JOGADOR_W, JOGADOR_H);
 
     spritesbd.cristal[0] = sprite_grabBd(0, 64,  CRISTAL_W, CRISTAL_H);
     spritesbd.cristal[1] = sprite_grabBd(0, 80, CRISTAL_W, CRISTAL_H);
@@ -807,7 +825,10 @@ void player_init()
 }
 void player_update()
 {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+
+    if(frames % 6 == 0){
+
+    
 
     if(key[ALLEGRO_KEY_LEFT])
         player.x -= 16;
@@ -857,6 +878,7 @@ void player_update()
     //     if(shots_add(true, false, x, player.y))
     //         player.shot_timer = 5;
     // }
+    }
     player.frame++;
 }
 
@@ -865,7 +887,12 @@ void player_draw(){
         int frame_display = (player.frame / 10) % 7;
 
         //if(shots[i].ship)
-        al_draw_bitmap(spritesbd.jogador[frame_display], player.x, player.y, 0);
+        if(key[ALLEGRO_KEY_LEFT])
+            al_draw_bitmap(spritesbd.jogadorEsq[frame_display], player.x, player.y, 0);
+        else if(key[ALLEGRO_KEY_RIGHT])
+            al_draw_bitmap(spritesbd.jogadorDir[frame_display], player.x, player.y, 0);
+        else
+            al_draw_bitmap(spritesbd.jogador[frame_display], player.x, player.y, 0);
         //al_draw_bitmap(sprites.ship_shot[frame_display], shots[i].x, shots[i].y, 0);
         /* else // alien
         {
