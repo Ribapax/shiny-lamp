@@ -612,7 +612,7 @@ void wall_draw(SPRITESBD spritesbd, listaParede lista) {
 
   parede  *em_andamento;
 
-  em_andamento = lista.início;
+  em_andamento = lista.inicio;
   for (int i = 1; i < lista.tamanho; ++i){
     al_draw_bitmap(spritesbd.wall, em_andamento->x, em_andamento->y, 0);
     em_andamento = em_andamento->proximo;
@@ -826,7 +826,7 @@ typedef struct PLAYER {
 
 //         if(shots[i].ship)
 //             al_draw_bitmap(sprites.ship_shot[frame_display], shots[i].x,
-//             shots[i].y, 0);
+//             sh ots[i].y, 0);
 //         else // alien
 //         {
 //             ALLEGRO_COLOR tint =

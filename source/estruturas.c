@@ -91,7 +91,7 @@ void player_draw(PLAYER player, unsigned char *key, SPRITESBD spritesbd) {
 }
 
 void iniciaListaTerra(listaTerra *lista) {
-  lista->início = NULL;
+  lista->inicio = NULL;
   lista->fim = NULL;
   lista->tamanho = 0;
 }
@@ -105,10 +105,10 @@ int insListaVazTerra(listaTerra *lista, int x, int y) {
   novaTerra->x = x;
   novaTerra->y = y;
 
-  novaTerra->anterior = lista->início;
+  novaTerra->anterior = lista->inicio;
   novaTerra->proximo = lista->fim;
 
-  lista->início = novaTerra;
+  lista->inicio = novaTerra;
   lista->fim = novaTerra;
   lista->tamanho++;
   return 0;
@@ -136,7 +136,7 @@ int removListaTerra(listaTerra *lista, int x, int y) {
   int pos;
   terra *remov_elemento, *em_andamento;
 
-  em_andamento = lista->início;
+  em_andamento = lista->inicio;
   for (int i = 1; i < lista->tamanho; ++i){
     if(em_andamento->x ==x && em_andamento->y ==y)
       pos =i;
@@ -147,18 +147,18 @@ int removListaTerra(listaTerra *lista, int x, int y) {
     return -1;
 
   if (pos == 1) { /* remoção do 1° elemento */
-    remov_elemento = lista->início;
-    lista->início = lista->início->proximo;
-    if (lista->início == NULL)
+    remov_elemento = lista->inicio;
+    lista->inicio = lista->inicio->proximo;
+    if (lista->inicio == NULL)
       lista->fim = NULL;
     else
-      lista->início->anterior = NULL;
+      lista->inicio->anterior = NULL;
   } else if (pos == lista->tamanho) { /* remoção do último elemento */
     remov_elemento = lista->fim;
     lista->fim->anterior->proximo = NULL;
     lista->fim = lista->fim->anterior;
   } else { /* remoção em outro lugar */
-    em_andamento = lista->início;
+    em_andamento = lista->inicio;
     for (int i = 1; i < pos; ++i)
       em_andamento = em_andamento->proximo;
     remov_elemento = em_andamento;
@@ -176,18 +176,18 @@ void destruirListaTerra(listaTerra *lista){
 
   while(lista->tamanho > 0)  {
 
-    remov_elemento = lista->início;
-    lista->início = lista->início->proximo;
-    if (lista->início == NULL)
+    remov_elemento = lista->inicio;
+    lista->inicio = lista->inicio->proximo;
+    if (lista->inicio == NULL)
       lista->fim = NULL;
     else
-      lista->início->anterior = NULL;  
+      lista->inicio->anterior = NULL;  
   }
 
 }   
 
 void iniciaListaParede(listaParede *lista) {
-  lista->início = NULL;
+  lista->inicio = NULL;
   lista->fim = NULL;
   lista->tamanho = 0;
 }
@@ -201,10 +201,10 @@ int insListaVazParede(listaParede *lista, int x, int y) {
   novaParede->x = x;
   novaParede->y = y;
 
-  novaParede->anterior = lista->início;
+  novaParede->anterior = lista->inicio;
   novaParede->proximo = lista->fim;
 
-  lista->início = novaParede;
+  lista->inicio = novaParede;
   lista->fim = novaParede;
   lista->tamanho++;
   return 0;
@@ -232,7 +232,7 @@ int removListaParede(listaParede *lista, int x, int y) {
   int pos;
   parede *remov_elemento, *em_andamento;
 
-  em_andamento = lista->início;
+  em_andamento = lista->inicio;
   for (int i = 1; i < lista->tamanho; ++i){
     if(em_andamento->x ==x && em_andamento->y ==y)
       pos =i;
@@ -243,18 +243,18 @@ int removListaParede(listaParede *lista, int x, int y) {
     return -1;
 
   if (pos == 1) { /* remoção do 1° elemento */
-    remov_elemento = lista->início;
-    lista->início = lista->início->proximo;
-    if (lista->início == NULL)
+    remov_elemento = lista->inicio;
+    lista->inicio = lista->inicio->proximo;
+    if (lista->inicio == NULL)
       lista->fim = NULL;
     else
-      lista->início->anterior = NULL;
+      lista->inicio->anterior = NULL;
   } else if (pos == lista->tamanho) { /* remoção do último elemento */
     remov_elemento = lista->fim;
     lista->fim->anterior->proximo = NULL;
     lista->fim = lista->fim->anterior;
   } else { /* remoção em outro lugar */
-    em_andamento = lista->início;
+    em_andamento = lista->inicio;
     for (int i = 1; i < pos; ++i)
       em_andamento = em_andamento->proximo;
     remov_elemento = em_andamento;
@@ -272,12 +272,12 @@ void destruirListaParede(listaParede *lista){
 
   while(lista->tamanho > 0)  {
 
-    remov_elemento = lista->início;
-    lista->início = lista->início->proximo;
-    if (lista->início == NULL)
+    remov_elemento = lista->inicio;
+    lista->inicio = lista->inicio->proximo;
+    if (lista->inicio == NULL)
       lista->fim = NULL;
     else
-      lista->início->anterior = NULL;  
+      lista->inicio->anterior = NULL;  
   }
 
 }   

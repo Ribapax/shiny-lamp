@@ -34,7 +34,7 @@ typedef struct terra{
 }terra;
 
 typedef struct listaTerra {   
-  terra *início;   
+  terra *inicio;   
   terra *fim;   
   int tamanho;   
 }listaTerra;  
@@ -46,7 +46,7 @@ typedef struct parede{
 }parede;
 
 typedef struct listaParede {   
-  parede *início;   
+  parede *inicio;   
   parede *fim;   
   int tamanho;   
 }listaParede;  
