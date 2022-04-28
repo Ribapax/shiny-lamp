@@ -39,6 +39,30 @@ typedef struct listaTerra {
   int tamanho;   
 }listaTerra;  
 
+typedef struct muro{
+  int x, y;
+  struct muro *proximo;
+  struct muro *anterior;
+}muro;
+
+typedef struct listaMuro {   
+  muro *inicio;   
+  muro *fim;   
+  int tamanho;   
+}listaMuro;  
+
+typedef struct pedra{
+  int x, y;
+  struct pedra *proximo;
+  struct pedra *anterior;
+}pedra;
+
+typedef struct listaPedra {   
+  pedra *inicio;   
+  pedra *fim;   
+  int tamanho;   
+}listaPedra;  
+
 typedef struct cristal{
   int x, y;
   int frame;
@@ -65,9 +89,7 @@ typedef struct listaParede {
 }listaParede;  
 
 
-typedef struct muro{
-  int x, y;
-}muro;
+
 
 typedef struct PLAYER{
   int x, y;
@@ -106,9 +128,34 @@ int removListaParede(listaParede *lista, int x, int y);
 
 void destruirListaParede(listaParede *lista);
 
+void iniciaListaMuro(listaMuro *lista);
+
+int insListaVazMuro (listaMuro * lista, int x, int y);
+
+int insListaFimMuro(listaMuro *lista, int x, int y);
+
+int removListaMuro(listaMuro *lista, int x, int y);
+
+void destruirListaMuro(listaMuro *lista);
+
+void iniciaListaPedra(listaPedra *lista);
+
+int insListaVazPedra (listaPedra * lista, int x, int y);
+
+int insListaFimPedra(listaPedra *lista, int x, int y);
+
+int removListaPedra(listaPedra *lista, int x, int y);
+
+void destruirListaPedra(listaPedra *lista);
+
 void player_update(PLAYER *player, unsigned char *key);
 
 void player_draw(PLAYER player,unsigned char *key, SPRITESBD spritesbd);
 
+void dirt_draw(SPRITESBD spritesbd, listaTerra lista);
+
+void muro_draw(SPRITESBD spritesbd, listaMuro lista);
+
+void pedra_draw(SPRITESBD spritesbd, listaPedra lista);
 
 #endif

@@ -290,21 +290,6 @@ typedef struct DIRT {
 #define DIRTS_N 760
 DIRT dirts[DIRTS_N];
 
-void dirt_draw(SPRITESBD spritesbd, listaTerra lista) {
-  // int espaco = TILE;
-  terra *em_andamento;
-
-  em_andamento = lista.inicio;
-  for (int i = 1; i < lista.tamanho; ++i) {
-    al_draw_bitmap(spritesbd.dirt, em_andamento->x, em_andamento->y, 0);
-    em_andamento = em_andamento->proximo;
-  }
-
-  // for (int i = 0; i < DIRTS_N; i++) {
-  //   if (dirts[i].used == false)
-  //     al_draw_bitmap(spritesbd.dirt, dirts[i].x, dirts[i].y, 0);
-  // }
-}
 
 void dirt_collide(int x, int y) {
   for (int i = 0; i < DIRTS_N; i++) {
@@ -430,7 +415,9 @@ int main() {
   listaParede listaP;
   listaTerra listaT;
   listaCristal listaC;
-  leMapa("resources/mapas/nivel1", &listaP, &listaT, &listaC);
+  listaPedra listaPedra;
+  listaMuro listaM;
+  leMapa("resources/mapas/nivel1", &listaP, &listaT, &listaC,&listaPedra, &listaM);
 
   frames = 0;
   score = 0;
@@ -477,6 +464,8 @@ int main() {
       // fx_draw(sprites);
       // ship_draw(sprites);
       wall_draw(spritesbd, listaP);
+      muro_draw(spritesbd, listaM);
+      pedra_draw(spritesbd, listaPedra);
       dirt_draw(spritesbd, listaT);
       cristal_draw(spritesbd, listaC);
       player_draw(player, key, spritesbd);

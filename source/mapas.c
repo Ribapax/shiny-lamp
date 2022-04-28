@@ -3,9 +3,9 @@
 #include "estruturas.h"
 //#include <bits/posix2_lim.h>
 
-void leMapa(char *mapa, listaParede *lista, listaTerra *listTerra, listaCristal *listCristal) {
+void leMapa(char *mapa, listaParede *lista, listaTerra *listTerra, listaCristal *listCristal,listaPedra *listPedra, listaMuro *listMuro) {
 
-  int flagParede = 0, flagTerra = 0, flagCristal = 0;
+  int flagParede = 0, flagTerra = 0, flagCristal = 0,flagPedra = 0, flagMuro = 0;
 
   FILE *arq;
 
@@ -52,6 +52,24 @@ void leMapa(char *mapa, listaParede *lista, listaTerra *listTerra, listaCristal 
           flagCristal++;
         } else {
           insListaFimCristal(listCristal, j * 16, (i + 1) * 16);
+        }
+        break;
+      case 'w':
+        if (flagMuro == 0) {
+          iniciaListaMuro(listMuro);
+          insListaVazMuro(listMuro, j * 16, (i + 1) * 16);
+          flagMuro++;
+        } else {
+          insListaFimMuro(listMuro, j * 16, (i + 1) * 16);
+        }
+        break;
+      case 'r':
+        if (flagPedra == 0) {
+          iniciaListaPedra(listPedra);
+          insListaVazPedra(listPedra, j * 16, (i + 1) * 16);
+          flagPedra++;
+        } else {
+          insListaFimPedra(listPedra, j * 16, (i + 1) * 16);
         }
         break;
 
