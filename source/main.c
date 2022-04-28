@@ -379,119 +379,119 @@ void fx_draw(SPRITES sprites) {
 
 // --- shots ---
 
-typedef struct SHOT {
-  int x, y, dx, dy;
-  int frame;
-  bool ship;
-  bool used;
-} SHOT;
+// typedef struct SHOT {
+//   int x, y, dx, dy;
+//   int frame;
+//   bool ship;
+//   bool used;
+// } SHOT;
 
-#define SHOTS_N 128
-SHOT shots[SHOTS_N];
+// #define SHOTS_N 128
+// SHOT shots[SHOTS_N];
 
-void shots_init() {
-  for (int i = 0; i < SHOTS_N; i++)
-    shots[i].used = false;
-}
+// void shots_init() {
+//   for (int i = 0; i < SHOTS_N; i++)
+//     shots[i].used = false;
+// }
 
-bool shots_add(bool ship, bool straight, int x, int y) {
-  al_play_sample(sample_shot, 0.3, 0, ship ? 1.0 : between_f(1.5, 1.6),
-                 ALLEGRO_PLAYMODE_ONCE, NULL);
+// bool shots_add(bool ship, bool straight, int x, int y) {
+//   al_play_sample(sample_shot, 0.3, 0, ship ? 1.0 : between_f(1.5, 1.6),
+//                  ALLEGRO_PLAYMODE_ONCE, NULL);
 
-  for (int i = 0; i < SHOTS_N; i++) {
-    if (shots[i].used)
-      continue;
+//   for (int i = 0; i < SHOTS_N; i++) {
+//     if (shots[i].used)
+//       continue;
 
-    shots[i].ship = ship;
+//     shots[i].ship = ship;
 
-    if (ship) {
-      shots[i].x = x - (SHIP_SHOT_W / 2);
-      shots[i].y = y;
-    } else // alien
-    {
-      shots[i].x = x - (ALIEN_SHOT_W / 2);
-      shots[i].y = y - (ALIEN_SHOT_H / 2);
+//     if (ship) {
+//       shots[i].x = x - (SHIP_SHOT_W / 2);
+//       shots[i].y = y;
+//     } else // alien
+//     {
+//       shots[i].x = x - (ALIEN_SHOT_W / 2);
+//       shots[i].y = y - (ALIEN_SHOT_H / 2);
 
-      if (straight) {
-        shots[i].dx = 0;
-        shots[i].dy = 2;
-      } else {
+//       if (straight) {
+//         shots[i].dx = 0;
+//         shots[i].dy = 2;
+//       } else {
 
-        shots[i].dx = between(-2, 2);
-        shots[i].dy = between(-2, 2);
-      }
+//         shots[i].dx = between(-2, 2);
+//         shots[i].dy = between(-2, 2);
+//       }
 
-      // if the shot has no speed, don't bother
-      if (!shots[i].dx && !shots[i].dy)
-        return true;
+//       // if the shot has no speed, don't bother
+//       if (!shots[i].dx && !shots[i].dy)
+//         return true;
 
-      shots[i].frame = 0;
-    }
+//       shots[i].frame = 0;
+//     }
 
-    shots[i].frame = 0;
-    shots[i].used = true;
+//     shots[i].frame = 0;
+//     shots[i].used = true;
 
-    return true;
-  }
-  return false;
-}
+//     return true;
+//   }
+//   return false;
+// }
 
-void shots_update() {
-  for (int i = 0; i < SHOTS_N; i++) {
-    if (!shots[i].used)
-      continue;
+// void shots_update() {
+//   for (int i = 0; i < SHOTS_N; i++) {
+//     if (!shots[i].used)
+//       continue;
 
-    if (shots[i].ship) {
-      shots[i].y -= 5;
+//     if (shots[i].ship) {
+//       shots[i].y -= 5;
 
-      if (shots[i].y < -SHIP_SHOT_H) {
-        shots[i].used = false;
-        continue;
-      }
-    } else // alien
-    {
-      shots[i].x += shots[i].dx;
-      shots[i].y += shots[i].dy;
+//       if (shots[i].y < -SHIP_SHOT_H) {
+//         shots[i].used = false;
+//         continue;
+//       }
+//     } else // alien
+//     {
+//       shots[i].x += shots[i].dx;
+//       shots[i].y += shots[i].dy;
 
-      if ((shots[i].x < -ALIEN_SHOT_W) || (shots[i].x > BUFFER_W) ||
-          (shots[i].y < -ALIEN_SHOT_H) || (shots[i].y > BUFFER_H)) {
-        shots[i].used = false;
-        continue;
-      }
-    }
+//       if ((shots[i].x < -ALIEN_SHOT_W) || (shots[i].x > BUFFER_W) ||
+//           (shots[i].y < -ALIEN_SHOT_H) || (shots[i].y > BUFFER_H)) {
+//         shots[i].used = false;
+//         continue;
+//       }
+//     }
 
-    shots[i].frame++;
-  }
-}
+//     shots[i].frame++;
+//   }
+// }
 
-bool shots_collide(bool ship, int x, int y, int w, int h) {
-  for (int i = 0; i < SHOTS_N; i++) {
-    if (!shots[i].used)
-      continue;
+// bool shots_collide(bool ship, int x, int y, int w, int h) {
+//   for (int i = 0; i < SHOTS_N; i++) {
+//     if (!shots[i].used)
+//       continue;
 
-    // don't collide with one's own shots
-    if (shots[i].ship == ship)
-      continue;
+//     // don't collide with one's own shots
+//     if (shots[i].ship == ship)
+//       continue;
 
-    int sw, sh;
-    if (ship) {
-      sw = ALIEN_SHOT_W;
-      sh = ALIEN_SHOT_H;
-    } else {
-      sw = SHIP_SHOT_W;
-      sh = SHIP_SHOT_H;
-    }
+//     int sw, sh;
+//     if (ship) {
+//       sw = ALIEN_SHOT_W;
+//       sh = ALIEN_SHOT_H;
+//     } else {
+//       sw = SHIP_SHOT_W;
+//       sh = SHIP_SHOT_H;
+//     }
 
-    if (collide(x, y, x + w, y + h, shots[i].x, shots[i].y, shots[i].x + sw,
-                shots[i].y + sh)) {
-      fx_add(true, shots[i].x + (sw / 2), shots[i].y + (sh / 2));
-      shots[i].used = false;
-      return true;
-    }
-  }
+//     if (collide(x, y, x + w, y + h, shots[i].x, shots[i].y, shots[i].x + sw,
+//                 shots[i].y + sh)) {
+//       fx_add(true, shots[i].x + (sw / 2), shots[i].y + (sh / 2));
+//       shots[i].used = false;
+//       return true;
+//     }
+//   }
 
-  return false;
-}
+//   return false;
+// }
 
 // void shots_draw(SPRITES sprites) {
 //   for (int i = 0; i < SHOTS_N; i++) {
@@ -533,95 +533,95 @@ typedef struct SHIP {
 } SHIP;
 SHIP ship;
 
-void ship_init() {
-  ship.x = (BUFFER_W / 2) - (SHIP_W / 2);
-  ship.y = (BUFFER_H / 2) - (SHIP_H / 2);
-  ship.shot_timer = 0;
-  ship.lives = 3;
-  ship.respawn_timer = 0;
-  ship.invincible_timer = 120;
-}
+// void ship_init() {
+//   ship.x = (BUFFER_W / 2) - (SHIP_W / 2);
+//   ship.y = (BUFFER_H / 2) - (SHIP_H / 2);
+//   ship.shot_timer = 0;
+//   ship.lives = 3;
+//   ship.respawn_timer = 0;
+//   ship.invincible_timer = 120;
+// }
 
-void ship_update() {
-  if (ship.lives < 0)
-    return;
+// void ship_update() {
+//   if (ship.lives < 0)
+//     return;
 
-  if (ship.respawn_timer) {
-    ship.respawn_timer--;
-    return;
-  }
+//   if (ship.respawn_timer) {
+//     ship.respawn_timer--;
+//     return;
+//   }
 
-  if (key[ALLEGRO_KEY_LEFT])
-    ship.x -= SHIP_SPEED;
-  if (key[ALLEGRO_KEY_RIGHT])
-    ship.x += SHIP_SPEED;
-  if (key[ALLEGRO_KEY_UP])
-    ship.y -= SHIP_SPEED;
-  if (key[ALLEGRO_KEY_DOWN])
-    ship.y += SHIP_SPEED;
+//   if (key[ALLEGRO_KEY_LEFT])
+//     ship.x -= SHIP_SPEED;
+//   if (key[ALLEGRO_KEY_RIGHT])
+//     ship.x += SHIP_SPEED;
+//   if (key[ALLEGRO_KEY_UP])
+//     ship.y -= SHIP_SPEED;
+//   if (key[ALLEGRO_KEY_DOWN])
+//     ship.y += SHIP_SPEED;
 
-  if (ship.x < 0)
-    ship.x = 0;
-  if (ship.y < 0)
-    ship.y = 0;
+//   if (ship.x < 0)
+//     ship.x = 0;
+//   if (ship.y < 0)
+//     ship.y = 0;
 
-  if (ship.x > SHIP_MAX_X)
-    ship.x = SHIP_MAX_X;
-  if (ship.y > SHIP_MAX_Y)
-    ship.y = SHIP_MAX_Y;
+//   if (ship.x > SHIP_MAX_X)
+//     ship.x = SHIP_MAX_X;
+//   if (ship.y > SHIP_MAX_Y)
+//     ship.y = SHIP_MAX_Y;
 
-  if (ship.invincible_timer)
-    ship.invincible_timer--;
-  else {
-    if (shots_collide(true, ship.x, ship.y, SHIP_W, SHIP_H)) {
-      int x = ship.x + (SHIP_W / 2);
-      int y = ship.y + (SHIP_H / 2);
-      fx_add(false, x, y);
-      fx_add(false, x + 4, y + 2);
-      fx_add(false, x - 2, y - 4);
-      fx_add(false, x + 1, y - 5);
+//   if (ship.invincible_timer)
+//     ship.invincible_timer--;
+//   else {
+//     if (shots_collide(true, ship.x, ship.y, SHIP_W, SHIP_H)) {
+//       int x = ship.x + (SHIP_W / 2);
+//       int y = ship.y + (SHIP_H / 2);
+//       fx_add(false, x, y);
+//       fx_add(false, x + 4, y + 2);
+//       fx_add(false, x - 2, y - 4);
+//       fx_add(false, x + 1, y - 5);
 
-      ship.lives--;
-      ship.respawn_timer = 90;
-      ship.invincible_timer = 180;
-    }
-  }
+//       ship.lives--;
+//       ship.respawn_timer = 90;
+//       ship.invincible_timer = 180;
+//     }
+//   }
 
-  if (ship.shot_timer)
-    ship.shot_timer--;
-  else if (key[ALLEGRO_KEY_X]) {
-    int x = ship.x + (SHIP_W / 2);
-    if (shots_add(true, false, x, ship.y))
-      ship.shot_timer = 5;
-  }
-}
+//   if (ship.shot_timer)
+//     ship.shot_timer--;
+//   else if (key[ALLEGRO_KEY_X]) {
+//     int x = ship.x + (SHIP_W / 2);
+//     if (shots_add(true, false, x, ship.y))
+//       ship.shot_timer = 5;
+//   }
+// }
 
-void ship_draw(SPRITES sprites) {
-  if (ship.lives < 0)
-    return;
-  if (ship.respawn_timer)
-    return;
-  if (((ship.invincible_timer / 2) % 3) == 1)
-    return;
+// void ship_draw(SPRITES sprites) {
+//   if (ship.lives < 0)
+//     return;
+//   if (ship.respawn_timer)
+//     return;
+//   if (((ship.invincible_timer / 2) % 3) == 1)
+//     return;
 
-  al_draw_bitmap(sprites.ship, ship.x, ship.y, 0);
-}
+//   al_draw_bitmap(sprites.ship, ship.x, ship.y, 0);
+// }
 
 void wall_draw(SPRITESBD spritesbd, listaParede lista) {
-  int espaco = TILE; // espaço no inicio da tela onde fica HUD do jogador
+  // int espaco = TILE; // espaço no inicio da tela onde fica HUD do jogador
 
-  parede  *em_andamento;
+  parede *em_andamento;
 
   em_andamento = lista.inicio;
-  for (int i = 1; i < lista.tamanho; ++i){
+  for (int i = 1; i < lista.tamanho; ++i) {
     al_draw_bitmap(spritesbd.wall, em_andamento->x, em_andamento->y, 0);
     em_andamento = em_andamento->proximo;
   }
 
-
   // for (int i = espaco; i < BUFFER_H; i += TILE) {
   //   for (int j = 0; j < BUFFER_W; j += TILE) {
-  //     if (i == espaco || j == 0 || i == BUFFER_H - TILE || j == BUFFER_W - TILE)
+  //     if (i == espaco || j == 0 || i == BUFFER_H - TILE || j == BUFFER_W -
+  //     TILE)
   //       al_draw_bitmap(spritesbd.wall, j, i, 0);
   //     // else
   //     //     al_draw_bitmap(spritesbd.dirt, j, i, 0);
@@ -639,37 +639,50 @@ typedef struct CRISTAL {
 #define CRISTAL_N 760
 CRISTAL cristals[CRISTAL_N];
 
-void cristal_init() {
-  int espaco = TILE;
-  int c = 0;
+// void cristal_init() {
+//   int espaco = TILE;
+//   int c = 0;
 
-  for (int i = 32; i < BUFFER_H - 16; i += TILE) {
-    for (int j = 16; j < BUFFER_W - 16; j += TILE) {
-      if (!(i == 16 || j == 0 || i == BUFFER_H - TILE ||
-            j == BUFFER_W - TILE)) {
-        cristals[c].x = j;
-        cristals[c].y = i;
-        cristals[c].used = false;
-        cristals[c].frame = 0;
+//   for (int i = 32; i < BUFFER_H - 16; i += TILE) {
+//     for (int j = 16; j < BUFFER_W - 16; j += TILE) {
+//       if (!(i == 16 || j == 0 || i == BUFFER_H - TILE ||
+//             j == BUFFER_W - TILE)) {
+//         cristals[c].x = j;
+//         cristals[c].y = i;
+//         cristals[c].used = false;
+//         cristals[c].frame = 0;
 
-        c++;
-      }
-    }
-  }
-}
-void cristal_draw(SPRITESBD spritesbd) {
+//         c++;
+//       }
+//     }
+//   }
+// }
+
+void cristal_draw(SPRITESBD spritesbd, listaCristal lista) {
   // int espaco = TILE;
   int frame_display;
 
-  for (int i = 0; i < CRISTAL_N; i++) {
-    if (cristals[i].used == false) {
-      frame_display = (cristals[i].frame / 5) % 8;
-      al_draw_bitmap(spritesbd.cristal[frame_display], cristals[i].x,
-                     cristals[i].y, 0);
-      cristals[i].frame++;
-    }
-    // al_draw_bitmap(spritesbd.dirt,dirts[i].x,dirts[i].y, 0);
+  cristal *em_andamento;
+
+  em_andamento = lista.inicio;
+  for (int i = 1; i < lista.tamanho; ++i) {
+    frame_display = (em_andamento->frame / 5) % 8;
+
+    al_draw_bitmap(spritesbd.cristal[frame_display], em_andamento->x,
+                   em_andamento->y, 0);
+    em_andamento->frame++;
+    em_andamento = em_andamento->proximo;
   }
+
+  // for (int i = 0; i < CRISTAL_N; i++) {
+  //   if (cristals[i].used == false) {
+  //     frame_display = (cristals[i].frame / 5) % 8;
+  //     al_draw_bitmap(spritesbd.cristal[frame_display], cristals[i].x,
+  //                    cristals[i].y, 0);
+  //     cristals[i].frame++;
+  //   }
+  // al_draw_bitmap(spritesbd.dirt,dirts[i].x,dirts[i].y, 0);
+  // }
 }
 
 void cristal_collide(int x, int y) {
@@ -691,28 +704,37 @@ typedef struct DIRT {
 #define DIRTS_N 760
 DIRT dirts[DIRTS_N];
 
-void dirt_init() {
-  int espaco = TILE;
-  int c = 0;
+// void dirt_init() {
+//   int espaco = TILE;
+//   int c = 0;
 
-  for (int i = 32; i < BUFFER_H - 16; i += TILE) {
-    for (int j = 16; j < BUFFER_W - 16; j += TILE) {
-      if (!(i == 16 || j == 0 || i == BUFFER_H - TILE ||
-            j == BUFFER_W - TILE)) {
-        dirts[c].x = j;
-        dirts[c].y = i;
-        dirts[c].used = false;
-        c++;
-      }
-    }
-  }
-}
-void dirt_draw(SPRITESBD spritesbd) {
+//   for (int i = 32; i < BUFFER_H - 16; i += TILE) {
+//     for (int j = 16; j < BUFFER_W - 16; j += TILE) {
+//       if (!(i == 16 || j == 0 || i == BUFFER_H - TILE ||
+//             j == BUFFER_W - TILE)) {
+//         dirts[c].x = j;
+//         dirts[c].y = i;
+//         dirts[c].used = false;
+//         c++;
+//       }
+//     }
+//   }
+// }
+
+void dirt_draw(SPRITESBD spritesbd, listaTerra lista) {
   // int espaco = TILE;
-  for (int i = 0; i < DIRTS_N; i++) {
-    if (dirts[i].used == false)
-      al_draw_bitmap(spritesbd.dirt, dirts[i].x, dirts[i].y, 0);
+  terra *em_andamento;
+
+  em_andamento = lista.inicio;
+  for (int i = 1; i < lista.tamanho; ++i) {
+    al_draw_bitmap(spritesbd.dirt, em_andamento->x, em_andamento->y, 0);
+    em_andamento = em_andamento->proximo;
   }
+
+  // for (int i = 0; i < DIRTS_N; i++) {
+  //   if (dirts[i].used == false)
+  //     al_draw_bitmap(spritesbd.dirt, dirts[i].x, dirts[i].y, 0);
+  // }
 }
 
 void dirt_collide(int x, int y) {
@@ -1115,11 +1137,13 @@ int main() {
   // ship_init();
   // aliens_init();
   // stars_init();
-  dirt_init();
-  cristal_init();
+  // dirt_init();
+  //cristal_init();
   player_init(&player);
   listaParede listaP;
-  leMapa("resources/mapas/nivel1", &listaP);
+  listaTerra listaT;
+  listaCristal listaC;
+  leMapa("resources/mapas/nivel1", &listaP, &listaT, &listaC);
 
   frames = 0;
   score = 0;
@@ -1166,8 +1190,8 @@ int main() {
       // fx_draw(sprites);
       // ship_draw(sprites);
       wall_draw(spritesbd, listaP);
-      //  dirt_draw();
-      //cristal_draw(spritesbd);
+      dirt_draw(spritesbd, listaT);
+      cristal_draw(spritesbd, listaC);
       player_draw(player, key, spritesbd);
 
       hud_draw(sprites);

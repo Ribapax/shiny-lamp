@@ -1,7 +1,6 @@
 
 #include "estruturas.h"
 
-
 void player_init(PLAYER *player) {
   player->x = 16;
   player->y = 32;
@@ -137,9 +136,9 @@ int removListaTerra(listaTerra *lista, int x, int y) {
   terra *remov_elemento, *em_andamento;
 
   em_andamento = lista->inicio;
-  for (int i = 1; i < lista->tamanho; ++i){
-    if(em_andamento->x ==x && em_andamento->y ==y)
-      pos =i;
+  for (int i = 1; i < lista->tamanho; ++i) {
+    if (em_andamento->x == x && em_andamento->y == y)
+      pos = i;
     em_andamento = em_andamento->proximo;
   }
 
@@ -171,20 +170,19 @@ int removListaTerra(listaTerra *lista, int x, int y) {
   return 0;
 }
 
-void destruirListaTerra(listaTerra *lista){ 
+void destruirListaTerra(listaTerra *lista) {
   terra *remov_elemento;
 
-  while(lista->tamanho > 0)  {
+  while (lista->tamanho > 0) {
 
     remov_elemento = lista->inicio;
     lista->inicio = lista->inicio->proximo;
     if (lista->inicio == NULL)
       lista->fim = NULL;
     else
-      lista->inicio->anterior = NULL;  
+      lista->inicio->anterior = NULL;
   }
-
-}   
+}
 
 void iniciaListaParede(listaParede *lista) {
   lista->inicio = NULL;
@@ -233,9 +231,9 @@ int removListaParede(listaParede *lista, int x, int y) {
   parede *remov_elemento, *em_andamento;
 
   em_andamento = lista->inicio;
-  for (int i = 1; i < lista->tamanho; ++i){
-    if(em_andamento->x ==x && em_andamento->y ==y)
-      pos =i;
+  for (int i = 1; i < lista->tamanho; ++i) {
+    if (em_andamento->x == x && em_andamento->y == y)
+      pos = i;
     em_andamento = em_andamento->proximo;
   }
 
@@ -267,17 +265,113 @@ int removListaParede(listaParede *lista, int x, int y) {
   return 0;
 }
 
-void destruirListaParede(listaParede *lista){ 
+void destruirListaParede(listaParede *lista) {
   parede *remov_elemento;
 
-  while(lista->tamanho > 0)  {
+  while (lista->tamanho > 0) {
 
     remov_elemento = lista->inicio;
     lista->inicio = lista->inicio->proximo;
     if (lista->inicio == NULL)
       lista->fim = NULL;
     else
-      lista->inicio->anterior = NULL;  
+      lista->inicio->anterior = NULL;
+  }
+}
+
+void iniciaListaCristal(listaCristal *lista) {
+  lista->inicio = NULL;
+  lista->fim = NULL;
+  lista->tamanho = 0;
+}
+
+int insListaVazCristal(listaCristal *lista, int x, int y) {
+
+  cristal *novaCristal;
+  if ((novaCristal = malloc(sizeof(cristal))) == NULL)
+    return -1;
+
+  novaCristal->x = x;
+  novaCristal->y = y;
+  novaCristal->frame = 0;
+
+  novaCristal->anterior = lista->inicio;
+  novaCristal->proximo = lista->fim;
+
+  lista->inicio = novaCristal;
+  lista->fim = novaCristal;
+  lista->tamanho++;
+  return 0;
+}
+
+int insListaFimCristal(listaCristal *lista, int x, int y) {
+  cristal *novaCristal;
+  if ((novaCristal = malloc(sizeof(cristal))) == NULL)
+    return -1;
+
+  novaCristal->x = x;
+  novaCristal->y = y;
+  novaCristal->frame = 0;
+
+  novaCristal->proximo = NULL;
+  novaCristal->anterior = lista->fim;
+
+  lista->fim->proximo = novaCristal;
+  lista->fim = novaCristal;
+  lista->tamanho++;
+
+  return 0;
+}
+
+int removListaCristal(listaCristal *lista, int x, int y) {
+  int pos;
+  cristal *remov_elemento, *em_andamento;
+
+  em_andamento = lista->inicio;
+  for (int i = 1; i < lista->tamanho; ++i) {
+    if (em_andamento->x == x && em_andamento->y == y)
+      pos = i;
+    em_andamento = em_andamento->proximo;
   }
 
-}   
+  if (lista->tamanho == 0)
+    return -1;
+
+  if (pos == 1) { /* remoção do 1° elemento */
+    remov_elemento = lista->inicio;
+    lista->inicio = lista->inicio->proximo;
+    if (lista->inicio == NULL)
+      lista->fim = NULL;
+    else
+      lista->inicio->anterior = NULL;
+  } else if (pos == lista->tamanho) { /* remoção do último elemento */
+    remov_elemento = lista->fim;
+    lista->fim->anterior->proximo = NULL;
+    lista->fim = lista->fim->anterior;
+  } else { /* remoção em outro lugar */
+    em_andamento = lista->inicio;
+    for (int i = 1; i < pos; ++i)
+      em_andamento = em_andamento->proximo;
+    remov_elemento = em_andamento;
+    em_andamento->anterior->proximo = em_andamento->proximo;
+    em_andamento->proximo->anterior = em_andamento->anterior;
+  }
+  // free(remov_elemento->dado);
+  free(remov_elemento);
+  lista->tamanho--;
+  return 0;
+}
+
+void destruirListaCristal(listaCristal *lista) {
+  cristal *remov_elemento;
+
+  while (lista->tamanho > 0) {
+
+    remov_elemento = lista->inicio;
+    lista->inicio = lista->inicio->proximo;
+    if (lista->inicio == NULL)
+      lista->fim = NULL;
+    else
+      lista->inicio->anterior = NULL;
+  }
+}

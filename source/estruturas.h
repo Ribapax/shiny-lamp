@@ -39,6 +39,19 @@ typedef struct listaTerra {
   int tamanho;   
 }listaTerra;  
 
+typedef struct cristal{
+  int x, y;
+  int frame;
+  struct cristal *proximo;
+  struct cristal *anterior;
+}cristal;
+
+typedef struct listaCristal {   
+  cristal *inicio;   
+  cristal *fim;   
+  int tamanho;   
+}listaCristal;  
+
 typedef struct parede{
   int x, y;
   struct parede *proximo;
@@ -51,9 +64,6 @@ typedef struct listaParede {
   int tamanho;   
 }listaParede;  
 
-typedef struct cristal{
-  int x, y;
-}cristal;
 
 typedef struct muro{
   int x, y;
@@ -75,6 +85,16 @@ int insListaFimTerra(listaTerra *lista, int x, int y);
 int removListaTerra(listaTerra *lista, int x, int y);
 
 void destruirListaTerra(listaTerra *lista);
+
+void iniciaListaCristal(listaCristal *lista);
+
+int insListaVazCristal (listaCristal * lista, int x, int y);
+
+int insListaFimCristal(listaCristal *lista, int x, int y);
+
+int removListaCristal(listaCristal *lista, int x, int y);
+
+void destruirListaCristal(listaCristal *lista);
 
 void iniciaListaParede(listaParede *lista);
 

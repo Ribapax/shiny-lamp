@@ -9,6 +9,6 @@
 
 #define LINESIZE 40
 
-void leMapa(char *mapa, listaParede *lista);
+void leMapa(char *mapa, listaParede *lista, listaTerra *listTerra, listaCristal *listCristal);
 
 #endif
