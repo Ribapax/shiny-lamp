@@ -18,8 +18,7 @@ OBJ=$(subst .c,.o,$(subst source,objects,$(C_SOURCE)))
 CC=gcc
 
 # Flags for compiler
-CC_FLAGS=-c         \
-         -Wall      
+CC_FLAGS=-c -Wall -g      
 
 # Command used at clean target
 RM = rm -rf
