@@ -11,6 +11,8 @@ void sprite_init(SPRITESBD *spritesbd, SPRITES *sprites) {
   spritesbd->wall = sprite_grabBd(0, 48, TILE, TILE,spritesbd->_sheet);
 
   spritesbd->dirt = sprite_grabBd(48, 48, TILE, TILE,spritesbd->_sheet);
+  spritesbd->muro = sprite_grabBd(32, 48, TILE, TILE,spritesbd->_sheet);
+  spritesbd->pedra = sprite_grabBd(80, 48, TILE, TILE,spritesbd->_sheet);
 
   spritesbd->jogador[0] = sprite_grabBd(0, 0, TILE, TILE,spritesbd->_sheet);
   spritesbd->jogador[1] = sprite_grabBd(16, 0, TILE, TILE,spritesbd->_sheet);
@@ -88,6 +90,7 @@ ALLEGRO_BITMAP *sprite_grabBd(int x, int y, int w, int h, ALLEGRO_BITMAP *sprite
 
 
 void sprites_deinit(SPRITES sprites) {
+  
   al_destroy_bitmap(sprites.ship);
 
   al_destroy_bitmap(sprites.ship_shot[0]);
