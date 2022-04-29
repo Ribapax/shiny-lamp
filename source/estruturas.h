@@ -129,7 +129,7 @@ typedef struct PLAYER {
   int frame;
 } PLAYER;
 
-void player_init(PLAYER *player);
+void player_init(PLAYER *player, int x, int y);
 
 void iniciaListaTerra(listaTerra *lista);
 
@@ -191,6 +191,16 @@ int removListaQuadrado(listaQuadrado *lista, int x, int y);
 
 void destruirListaQuadrado(listaQuadrado *lista);
 
+void iniciaListaAmoeba(listaAmoeba *lista);
+
+int insListaVazAmoeba(listaAmoeba *lista, int x, int y);
+
+int insListaFimAmoeba(listaAmoeba *lista, int x, int y);
+
+int removListaAmoeba(listaAmoeba *lista, int x, int y);
+
+void destruirListaAmoeba(listaAmoeba *lista);
+
 void iniciaListaBorboleta(listaBorboleta *lista);
 
 int insListaVazBorboleta(listaBorboleta *lista, int x, int y);
@@ -201,7 +211,11 @@ int removListaBorboleta(listaBorboleta *lista, int x, int y);
 
 void destruirListaBorboleta(listaBorboleta *lista);
 
-void player_update(PLAYER *player, unsigned char *key);
+void player_update(PLAYER *player, unsigned char *key, listaParede *lista,
+                   listaTerra *listTerra, listaCristal *listCristal,
+                   listaPedra *listPedra, listaMuro *listMuro,
+                   listaQuadrado *listQuadrado, listaBorboleta *listBorboleta,
+                   listaAmoeba *listAmoeba);
 
 void player_draw(PLAYER player, unsigned char *key, SPRITESBD spritesbd);
 
@@ -216,5 +230,20 @@ void cristal_draw(SPRITESBD spritesbd, listaCristal lista);
 void quadrado_draw(SPRITESBD spritesbd, listaQuadrado lista);
 
 void borboleta_draw(SPRITESBD spritesbd, listaBorboleta lista);
+
+void amoeba_draw(SPRITESBD spritesbd, listaAmoeba lista);
+
+void wall_draw(SPRITESBD spritesbd, listaParede lista);
+
+bool findListaMuro(listaMuro *lista, int x, int y);
+
+bool findListaPedra(listaPedra *lista, int x, int y);
+
+bool findListaTerra(listaTerra *lista, int x, int y);
+
+void pedra_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
+                  listaCristal *listCristal, listaPedra *listPedra,
+                  listaMuro *listMuro, listaQuadrado *listQuadrado,
+                  listaBorboleta *listBorboleta, listaAmoeba *listAmoeba);
 
 #endif

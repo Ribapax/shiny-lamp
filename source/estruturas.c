@@ -1,66 +1,86 @@
 
 #include "estruturas.h"
+#include <stdbool.h>
 #include <stdio.h>
 
-void player_init(PLAYER *player) {
-  player->x = 16;
-  player->y = 32;
+void player_init(PLAYER *player, int x, int y) {
+  player->x = x;
+  player->y = y;
   player->frame = 0;
 }
 
-void player_update(PLAYER *player, unsigned char *key) {
+void pedra_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
+                  listaCristal *listCristal, listaPedra *listPedra,
+                  listaMuro *listMuro, listaQuadrado *listQuadrado,
+                  listaBorboleta *listBorboleta, listaAmoeba *listAmoeba) {
+
+  if (player->frame % 8 == 0) {
+
+    int prox_y;
+    pedra *em_andamento;
+
+    em_andamento = listPedra->inicio;
+    for (int i = 1; i <= listPedra->tamanho; ++i) {
+      prox_y = em_andamento->y + 16;
+
+      if (prox_y > PLAYER_MAX_Y)
+        prox_y = PLAYER_MAX_Y;
+
+      if (findListaMuro(listMuro, em_andamento->x, prox_y))
+        prox_y = em_andamento->y;
+        
+      if (findListaTerra(listTerra, em_andamento->x, prox_y))
+        prox_y = em_andamento->y;
+
+
+      em_andamento->y = prox_y;
+      em_andamento = em_andamento->proximo;
+    }
+  }
+}
+
+void player_update(PLAYER *player, unsigned char *key, listaParede *lista,
+                   listaTerra *listTerra, listaCristal *listCristal,
+                   listaPedra *listPedra, listaMuro *listMuro,
+                   listaQuadrado *listQuadrado, listaBorboleta *listBorboleta,
+                   listaAmoeba *listAmoeba) {
 
   if (player->frame % 6 == 0) {
+    int prox_x = player->x, prox_y = player->y;
 
     if (key[ALLEGRO_KEY_LEFT])
-      player->x -= 16;
+      prox_x = player->x - 16;
     else if (key[ALLEGRO_KEY_RIGHT])
-      player->x += 16;
+      prox_x = player->x + 16;
     else if (key[ALLEGRO_KEY_UP])
-      player->y -= 16;
+      prox_y = player->y - 16;
     else if (key[ALLEGRO_KEY_DOWN])
-      player->y += 16;
+      prox_y = player->y + 16;
 
-    if (player->x < 16)
-      player->x = 16;
-    if (player->y < 32)
-      player->y = 32;
+    if (prox_x < 16)
+      prox_x = 16;
+    if (prox_y < 32)
+      prox_y = 32;
 
-    if (player->x > PLAYER_MAX_X)
-      player->x = PLAYER_MAX_X;
-    if (player->y > PLAYER_MAX_Y)
-      player->y = PLAYER_MAX_Y;
+    if (prox_x > PLAYER_MAX_X)
+      prox_x = PLAYER_MAX_X;
+    if (prox_y > PLAYER_MAX_Y)
+      prox_y = PLAYER_MAX_Y;
 
-    // dirt_collide(player->x, player->y);
-    // cristal_collide(player->x, player->y);
+    if (findListaMuro(listMuro, prox_x, prox_y)) {
+      prox_x = player->x;
+      prox_y = player->y;
+    }
+    if (findListaPedra(listPedra, prox_x, prox_y)) {
+      prox_x = player->x;
+      prox_y = player->y;
+    }
 
-    // if(player->invincible_timer)
-    //     player->invincible_timer--;
-    // else
-    // {
-    //     if(shots_collide(true, player->x, player->y, player_W, player_H))
-    //     {
-    //         int x = player->x + (player_W / 2);
-    //         int y = player->y + (player_H / 2);
-    //         fx_add(false, x, y);
-    //         fx_add(false, x+4, y+2);
-    //         fx_add(false, x-2, y-4);
-    //         fx_add(false, x+1, y-5);
+    removListaTerra(listTerra, prox_x, prox_y);
+    removListaCristal(listCristal, prox_x, prox_y);
 
-    //         player->lives--;
-    //         player->respawn_timer = 90;
-    //         player->invincible_timer = 180;
-    //     }
-    // }
-
-    // if(player->shot_timer)
-    //     player->shot_timer--;
-    // else if(key[ALLEGRO_KEY_X])
-    // {
-    //     int x = player->x + (player_W / 2);
-    //     if(shots_add(true, false, x, player->y))
-    //         player->shot_timer = 5;
-    // }
+    player->x = prox_x;
+    player->y = prox_y;
   }
   player->frame++;
 }
@@ -169,7 +189,6 @@ void quadrado_draw(SPRITESBD spritesbd, listaQuadrado lista) {
     em_andamento->frame++;
     em_andamento = em_andamento->proximo;
   }
-
 }
 
 void borboleta_draw(SPRITESBD spritesbd, listaBorboleta lista) {
@@ -188,7 +207,46 @@ void borboleta_draw(SPRITESBD spritesbd, listaBorboleta lista) {
     em_andamento->frame++;
     em_andamento = em_andamento->proximo;
   }
+}
 
+void amoeba_draw(SPRITESBD spritesbd, listaAmoeba lista) {
+  // int espaco = TILE;
+  int frame_display;
+
+  amoeba *em_andamento;
+
+  em_andamento = lista.inicio;
+
+  for (int i = 1; i <= lista.tamanho; i++) {
+    frame_display = (em_andamento->frame / 5) % 4;
+
+    al_draw_bitmap(spritesbd.amoeba[frame_display], em_andamento->x,
+                   em_andamento->y, 0);
+    em_andamento->frame++;
+    em_andamento = em_andamento->proximo;
+  }
+}
+
+void wall_draw(SPRITESBD spritesbd, listaParede lista) {
+  // int espaco = TILE; // espaço no inicio da tela onde fica HUD do jogador
+
+  parede *em_andamento;
+
+  em_andamento = lista.inicio;
+  for (int i = 1; i <= lista.tamanho; ++i) {
+    al_draw_bitmap(spritesbd.wall, em_andamento->x, em_andamento->y, 0);
+    em_andamento = em_andamento->proximo;
+  }
+
+  // for (int i = espaco; i < BUFFER_H; i += TILE) {
+  //   for (int j = 0; j < BUFFER_W; j += TILE) {
+  //     if (i == espaco || j == 0 || i == BUFFER_H - TILE || j == BUFFER_W -
+  //     TILE)
+  //       al_draw_bitmap(spritesbd.wall, j, i, 0);
+  //     // else
+  //     //     al_draw_bitmap(spritesbd.dirt, j, i, 0);
+  //   }
+  // }
 }
 
 void iniciaListaMuro(listaMuro *lista) {
@@ -233,8 +291,44 @@ int insListaFimMuro(listaMuro *lista, int x, int y) {
   return 0;
 }
 
+bool findListaMuro(listaMuro *lista, int x, int y) {
+  muro *em_andamento;
+
+  em_andamento = lista->inicio;
+  for (int i = 1; i <= lista->tamanho; ++i) {
+    if (em_andamento->x == x && em_andamento->y == y)
+      return true;
+    em_andamento = em_andamento->proximo;
+  }
+  return false;
+}
+
+bool findListaTerra(listaTerra *lista, int x, int y) {
+  terra *em_andamento;
+
+  em_andamento = lista->inicio;
+  for (int i = 1; i <= lista->tamanho; ++i) {
+    if (em_andamento->x == x && em_andamento->y == y)
+      return true;
+    em_andamento = em_andamento->proximo;
+  }
+  return false;
+}
+
+bool findListaPedra(listaPedra *lista, int x, int y) {
+  pedra *em_andamento;
+
+  em_andamento = lista->inicio;
+  for (int i = 1; i <= lista->tamanho; ++i) {
+    if (em_andamento->x == x && em_andamento->y == y)
+      return true;
+    em_andamento = em_andamento->proximo;
+  }
+  return false;
+}
+
 int removListaMuro(listaMuro *lista, int x, int y) {
-  int pos;
+  int pos = -1;
   muro *remov_elemento, *em_andamento;
 
   em_andamento = lista->inicio;
@@ -244,7 +338,7 @@ int removListaMuro(listaMuro *lista, int x, int y) {
     em_andamento = em_andamento->proximo;
   }
 
-  if (lista->tamanho == 0)
+  if (lista->tamanho == 0 || pos == -1)
     return -1;
 
   if (pos == 1) { /* remoção do 1° elemento */
@@ -428,17 +522,17 @@ int insListaFimTerra(listaTerra *lista, int x, int y) {
 }
 
 int removListaTerra(listaTerra *lista, int x, int y) {
-  int pos;
+  int pos = -1;
   terra *remov_elemento, *em_andamento;
 
   em_andamento = lista->inicio;
-  for (int i = 1; i < lista->tamanho; ++i) {
+  for (int i = 1; i <= lista->tamanho; ++i) {
     if (em_andamento->x == x && em_andamento->y == y)
       pos = i;
     em_andamento = em_andamento->proximo;
   }
 
-  if (lista->tamanho == 0)
+  if (lista->tamanho == 0 || pos == -1)
     return -1;
 
   if (pos == 1) { /* remoção do 1° elemento */
@@ -777,6 +871,105 @@ void destruirListaBorboleta(listaBorboleta *lista) {
   }
 }
 
+void iniciaListaAmoeba(listaAmoeba *lista) {
+  lista->inicio = NULL;
+  lista->fim = NULL;
+  lista->tamanho = 0;
+}
+
+int insListaVazAmoeba(listaAmoeba *lista, int x, int y) {
+
+  amoeba *novaAmoeba;
+  if ((novaAmoeba = malloc(sizeof(amoeba))) == NULL)
+    return -1;
+
+  novaAmoeba->x = x;
+  novaAmoeba->y = y;
+  novaAmoeba->frame = 0;
+
+  novaAmoeba->anterior = lista->inicio;
+  novaAmoeba->proximo = lista->fim;
+
+  lista->inicio = novaAmoeba;
+  lista->fim = novaAmoeba;
+  lista->tamanho++;
+  return 0;
+}
+
+int insListaFimAmoeba(listaAmoeba *lista, int x, int y) {
+  amoeba *novaAmoeba;
+  if ((novaAmoeba = malloc(sizeof(amoeba))) == NULL)
+    return -1;
+
+  novaAmoeba->x = x;
+  novaAmoeba->y = y;
+  novaAmoeba->frame = 0;
+
+  novaAmoeba->proximo = NULL;
+  novaAmoeba->anterior = lista->fim;
+
+  lista->fim->proximo = novaAmoeba;
+  lista->fim = novaAmoeba;
+  lista->tamanho++;
+
+  return 0;
+}
+
+int removListaAmoeba(listaAmoeba *lista, int x, int y) {
+  int pos;
+  amoeba *remov_elemento, *em_andamento;
+
+  em_andamento = lista->inicio;
+  for (int i = 1; i < lista->tamanho; ++i) {
+    if (em_andamento->x == x && em_andamento->y == y)
+      pos = i;
+    em_andamento = em_andamento->proximo;
+  }
+
+  if (lista->tamanho == 0)
+    return -1;
+
+  if (pos == 1) { /* remoção do 1° elemento */
+    remov_elemento = lista->inicio;
+    lista->inicio = lista->inicio->proximo;
+    if (lista->inicio == NULL)
+      lista->fim = NULL;
+    else
+      lista->inicio->anterior = NULL;
+  } else if (pos == lista->tamanho) { /* remoção do último elemento */
+    remov_elemento = lista->fim;
+    lista->fim->anterior->proximo = NULL;
+    lista->fim = lista->fim->anterior;
+  } else { /* remoção em outro lugar */
+    em_andamento = lista->inicio;
+    for (int i = 1; i < pos; ++i)
+      em_andamento = em_andamento->proximo;
+    remov_elemento = em_andamento;
+    em_andamento->anterior->proximo = em_andamento->proximo;
+    em_andamento->proximo->anterior = em_andamento->anterior;
+  }
+  // free(remov_elemento->dado);
+  free(remov_elemento);
+  lista->tamanho--;
+  return 0;
+}
+
+void destruirListaAmoeba(listaAmoeba *lista) {
+  amoeba *remov_elemento;
+
+  while (lista->tamanho > 0) {
+
+    remov_elemento = lista->inicio;
+    lista->inicio = lista->inicio->proximo;
+    if (lista->inicio == NULL)
+      lista->fim = NULL;
+    else
+      lista->inicio->anterior = NULL;
+    free(remov_elemento);
+    lista->tamanho--;
+  }
+}
+
 void iniciaListaCristal(listaCristal *lista) {
   lista->inicio = NULL;
   lista->fim = NULL;
@@ -822,17 +1015,17 @@ int insListaFimCristal(listaCristal *lista, int x, int y) {
 }
 
 int removListaCristal(listaCristal *lista, int x, int y) {
-  int pos;
+  int pos = -1;
   cristal *remov_elemento, *em_andamento;
 
   em_andamento = lista->inicio;
-  for (int i = 1; i < lista->tamanho; ++i) {
+  for (int i = 1; i <= lista->tamanho; ++i) {
     if (em_andamento->x == x && em_andamento->y == y)
       pos = i;
     em_andamento = em_andamento->proximo;
   }
 
-  if (lista->tamanho == 0)
+  if (lista->tamanho == 0 || pos == -1)
     return -1;
 
   if (pos == 1) { /* remoção do 1° elemento */

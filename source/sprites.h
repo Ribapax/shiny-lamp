@@ -40,6 +40,7 @@ typedef struct SPRITESBD {
   ALLEGRO_BITMAP *cristal[8];
   ALLEGRO_BITMAP *quadrado[4];
   ALLEGRO_BITMAP *borboleta[4];
+  ALLEGRO_BITMAP *amoeba[4];
   ALLEGRO_BITMAP *muro;
   ALLEGRO_BITMAP *pedra;
 

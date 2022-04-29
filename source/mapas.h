@@ -9,6 +9,9 @@
 
 #define LINESIZE 40
 
-void leMapa(char *mapa, listaParede *lista, listaTerra *listTerra, listaCristal *listCristal,listaPedra *listPedra, listaMuro *listMuro, listaQuadrado *listQuadrado, listaBorboleta *listBorboleta);
+void leMapa(char *mapa,PLAYER *player, listaParede *lista, listaTerra *listTerra,
+            listaCristal *listCristal, listaPedra *listPedra,
+            listaMuro *listMuro, listaQuadrado *listQuadrado,
+            listaBorboleta *listBorboleta, listaAmoeba *listAmoeba);
 
 #endif

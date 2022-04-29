@@ -24,6 +24,11 @@ void sprite_init(SPRITESBD *spritesbd, SPRITES *sprites) {
   spritesbd->borboleta[2] = sprite_grabBd(96, 96, TILE, TILE,spritesbd->_sheet);
   spritesbd->borboleta[3] = sprite_grabBd(96, 112, TILE, TILE,spritesbd->_sheet);
   
+  spritesbd->amoeba[0] = sprite_grabBd(48, 64, TILE, TILE,spritesbd->_sheet);
+  spritesbd->amoeba[1] = sprite_grabBd(48, 80, TILE, TILE,spritesbd->_sheet);
+  spritesbd->amoeba[2] = sprite_grabBd(48, 96, TILE, TILE,spritesbd->_sheet);
+  spritesbd->amoeba[3] = sprite_grabBd(48, 112, TILE, TILE,spritesbd->_sheet);
+  
   spritesbd->jogador[0] = sprite_grabBd(0, 0, TILE, TILE,spritesbd->_sheet);
   spritesbd->jogador[1] = sprite_grabBd(16, 0, TILE, TILE,spritesbd->_sheet);
   spritesbd->jogador[2] = sprite_grabBd(32, 0, TILE, TILE,spritesbd->_sheet);

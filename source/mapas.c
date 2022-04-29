@@ -3,12 +3,12 @@
 #include "estruturas.h"
 //#include <bits/posix2_lim.h>
 
-void leMapa(char *mapa, listaParede *lista, listaTerra *listTerra,
+void leMapa(char *mapa, PLAYER *player, listaParede *lista, listaTerra *listTerra,
             listaCristal *listCristal, listaPedra *listPedra,
-            listaMuro *listMuro, listaQuadrado *listQuadrado,  listaBorboleta *listBorboleta) {
+            listaMuro *listMuro, listaQuadrado *listQuadrado,  listaBorboleta *listBorboleta, listaAmoeba *listAmoeba) {
 
   int flagParede = 0, flagTerra = 0, flagCristal = 0, flagPedra = 0,
-      flagMuro = 0, flagQuadrado = 0, flagBorboleta =0;
+      flagMuro = 0, flagQuadrado = 0, flagBorboleta =0, flagAmoeba =0;
 
   FILE *arq;
 
@@ -31,7 +31,8 @@ void leMapa(char *mapa, listaParede *lista, listaTerra *listTerra,
   iniciaListaMuro(listMuro);
   iniciaListaParede(lista);
   iniciaListaBorboleta(listBorboleta);
-  
+  iniciaListaAmoeba(listAmoeba);
+
   for (int i = 0; i < 22; i++) {
     for (int j = 0; j <= 40; j++) {
       fscanf(arq, "%c", &tile);
@@ -44,6 +45,9 @@ void leMapa(char *mapa, listaParede *lista, listaTerra *listTerra,
         } else {
           insListaFimParede(lista, j * 16, (i + 1) * 16);
         }
+        break;
+      case 'X':
+        player_init(player,j*16,(i+1)*16);
         break;
       case '.':
         if (flagTerra == 0) {
@@ -93,12 +97,14 @@ void leMapa(char *mapa, listaParede *lista, listaTerra *listTerra,
           insListaFimBorboleta(listBorboleta, j * 16, (i + 1) * 16);
         }
         break;
-
-        // case constante2:
-        //   Instruções;
-        //   break;
-
-        //   default Instruções;
+      case 'a':
+        if (flagAmoeba == 0) {
+          insListaVazAmoeba(listAmoeba, j * 16, (i + 1) * 16);
+          flagAmoeba++;
+        } else {
+          insListaFimAmoeba(listAmoeba, j * 16, (i + 1) * 16);
+        }
+        break;
       }
     }
   }

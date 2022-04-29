@@ -212,27 +212,7 @@ typedef struct SHIP {
 } SHIP;
 SHIP ship;
 
-void wall_draw(SPRITESBD spritesbd, listaParede lista) {
-  // int espaco = TILE; // espaço no inicio da tela onde fica HUD do jogador
 
-  parede *em_andamento;
-
-  em_andamento = lista.inicio;
-  for (int i = 1; i <= lista.tamanho; ++i) {
-    al_draw_bitmap(spritesbd.wall, em_andamento->x, em_andamento->y, 0);
-    em_andamento = em_andamento->proximo;
-  }
-
-  // for (int i = espaco; i < BUFFER_H; i += TILE) {
-  //   for (int j = 0; j < BUFFER_W; j += TILE) {
-  //     if (i == espaco || j == 0 || i == BUFFER_H - TILE || j == BUFFER_W -
-  //     TILE)
-  //       al_draw_bitmap(spritesbd.wall, j, i, 0);
-  //     // else
-  //     //     al_draw_bitmap(spritesbd.dirt, j, i, 0);
-  //   }
-  // }
-}
 
 typedef struct CRISTAL {
   int x, y;
@@ -263,13 +243,6 @@ typedef struct DIRT {
 #define DIRTS_N 760
 DIRT dirts[DIRTS_N];
 
-
-void dirt_collide(int x, int y) {
-  for (int i = 0; i < DIRTS_N; i++) {
-    if (dirts[i].x == x && dirts[i].y == y)
-      dirts[i].used = true;
-  }
-}
 
 // --- aliens ---
 
@@ -375,7 +348,8 @@ int main() {
   // stars_init();
   // dirt_init();
   //cristal_init();
-  player_init(&player);
+  //player_init(&player);
+
   listaParede listaP;
   listaTerra listaT;
   listaCristal listaC;
@@ -383,8 +357,9 @@ int main() {
   listaMuro listaM;
   listaQuadrado listaQ;
   listaBorboleta listaB;
+  listaAmoeba listaA;
 
-  leMapa("resources/mapas/nivel7", &listaP, &listaT, &listaC,&listaPedra, &listaM,&listaQ,&listaB);
+  leMapa("resources/mapas/nivel1",&player , &listaP, &listaT, &listaC,&listaPedra, &listaM,&listaQ,&listaB, &listaA);
 
   frames = 0;
   score = 0;
@@ -403,7 +378,9 @@ int main() {
       // fx_update();
       // shots_update();
       // stars_update();
-      player_update(&player, key);
+      player_update(&player, key, &listaP, &listaT, &listaC,&listaPedra, &listaM,&listaQ,&listaB, &listaA);
+      pedra_update(&player, &listaP, &listaT, &listaC,&listaPedra, &listaM,&listaQ,&listaB, &listaA);
+
       // ship_update();
       // aliens_update();
       redraw = true;
@@ -437,6 +414,7 @@ int main() {
       cristal_draw(spritesbd, listaC);
       quadrado_draw(spritesbd, listaQ);
       borboleta_draw(spritesbd, listaB);
+      amoeba_draw(spritesbd, listaA);
       player_draw(player, key, spritesbd);
 
 
