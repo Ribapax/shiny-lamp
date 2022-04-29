@@ -240,13 +240,30 @@ bool findListaMuro(listaMuro *lista, int x, int y);
 
 bool findListaPedra(listaPedra *lista, int x, int y);
 
+void changeListaPedra(listaPedra *lista, int x, int y, int x_novo) ;
+
 bool findListaTerra(listaTerra *lista, int x, int y);
 
 bool findListaCristal(listaCristal *lista, int x, int y);
+
+bool findListaParede(listaParede *lista, int x, int y);
 
 void pedra_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
                   listaCristal *listCristal, listaPedra *listPedra,
                   listaMuro *listMuro, listaQuadrado *listQuadrado,
                   listaBorboleta *listBorboleta, listaAmoeba *listAmoeba);
+
+bool posicaoLivrePedra(int x,int y,listaParede *lista,
+                   listaTerra *listTerra, listaCristal *listCristal,
+                   listaPedra *listPedra, listaMuro *listMuro,
+                   listaQuadrado *listQuadrado, listaBorboleta *listBorboleta,
+                   listaAmoeba *listAmoeba);
+
+bool caiProLadoPedra(int x, int y, PLAYER *player, listaParede *lista,
+                     listaTerra *listTerra, listaCristal *listCristal,
+                     listaPedra *listPedra, listaMuro *listMuro,
+                     listaQuadrado *listQuadrado, listaBorboleta *listBorboleta,
+                     listaAmoeba *listAmoeba);
+
 
 #endif
