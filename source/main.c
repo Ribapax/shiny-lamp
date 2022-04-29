@@ -218,7 +218,7 @@ void wall_draw(SPRITESBD spritesbd, listaParede lista) {
   parede *em_andamento;
 
   em_andamento = lista.inicio;
-  for (int i = 1; i < lista.tamanho; ++i) {
+  for (int i = 1; i <= lista.tamanho; ++i) {
     al_draw_bitmap(spritesbd.wall, em_andamento->x, em_andamento->y, 0);
     em_andamento = em_andamento->proximo;
   }
@@ -243,33 +243,6 @@ typedef struct CRISTAL {
 
 #define CRISTAL_N 760
 CRISTAL cristals[CRISTAL_N];
-
-void cristal_draw(SPRITESBD spritesbd, listaCristal lista) {
-  // int espaco = TILE;
-  int frame_display;
-
-  cristal *em_andamento;
-
-  em_andamento = lista.inicio;
-  for (int i = 1; i < lista.tamanho; ++i) {
-    frame_display = (em_andamento->frame / 5) % 8;
-
-    al_draw_bitmap(spritesbd.cristal[frame_display], em_andamento->x,
-                   em_andamento->y, 0);
-    em_andamento->frame++;
-    em_andamento = em_andamento->proximo;
-  }
-
-  // for (int i = 0; i < CRISTAL_N; i++) {
-  //   if (cristals[i].used == false) {
-  //     frame_display = (cristals[i].frame / 5) % 8;
-  //     al_draw_bitmap(spritesbd.cristal[frame_display], cristals[i].x,
-  //                    cristals[i].y, 0);
-  //     cristals[i].frame++;
-  //   }
-  // al_draw_bitmap(spritesbd.dirt,dirts[i].x,dirts[i].y, 0);
-  // }
-}
 
 void cristal_collide(int x, int y) {
   for (int i = 0; i < CRISTAL_N; i++) {
@@ -315,15 +288,6 @@ typedef struct ALIEN {
   int life;
   bool used;
 } ALIEN;
-
-#define ALIENS_N 16
-ALIEN aliens[ALIENS_N];
-
-void aliens_init() {
-  for (int i = 0; i < ALIENS_N; i++)
-    aliens[i].used = false;
-}
-
 
 // --- hud ---
 
@@ -417,7 +381,10 @@ int main() {
   listaCristal listaC;
   listaPedra listaPedra;
   listaMuro listaM;
-  leMapa("resources/mapas/nivel1", &listaP, &listaT, &listaC,&listaPedra, &listaM);
+  listaQuadrado listaQ;
+  listaBorboleta listaB;
+
+  leMapa("resources/mapas/nivel7", &listaP, &listaT, &listaC,&listaPedra, &listaM,&listaQ,&listaB);
 
   frames = 0;
   score = 0;
@@ -468,7 +435,10 @@ int main() {
       pedra_draw(spritesbd, listaPedra);
       dirt_draw(spritesbd, listaT);
       cristal_draw(spritesbd, listaC);
+      quadrado_draw(spritesbd, listaQ);
+      borboleta_draw(spritesbd, listaB);
       player_draw(player, key, spritesbd);
+
 
       hud_draw(sprites);
 

@@ -14,6 +14,16 @@ void sprite_init(SPRITESBD *spritesbd, SPRITES *sprites) {
   spritesbd->muro = sprite_grabBd(32, 48, TILE, TILE,spritesbd->_sheet);
   spritesbd->pedra = sprite_grabBd(80, 48, TILE, TILE,spritesbd->_sheet);
 
+  spritesbd->quadrado[0] = sprite_grabBd(80, 64, TILE, TILE,spritesbd->_sheet);
+  spritesbd->quadrado[1] = sprite_grabBd(80, 80, TILE, TILE,spritesbd->_sheet);
+  spritesbd->quadrado[2] = sprite_grabBd(80, 96, TILE, TILE,spritesbd->_sheet);
+  spritesbd->quadrado[3] = sprite_grabBd(80, 112, TILE, TILE,spritesbd->_sheet);
+  
+  spritesbd->borboleta[0] = sprite_grabBd(96, 64, TILE, TILE,spritesbd->_sheet);
+  spritesbd->borboleta[1] = sprite_grabBd(96, 80, TILE, TILE,spritesbd->_sheet);
+  spritesbd->borboleta[2] = sprite_grabBd(96, 96, TILE, TILE,spritesbd->_sheet);
+  spritesbd->borboleta[3] = sprite_grabBd(96, 112, TILE, TILE,spritesbd->_sheet);
+  
   spritesbd->jogador[0] = sprite_grabBd(0, 0, TILE, TILE,spritesbd->_sheet);
   spritesbd->jogador[1] = sprite_grabBd(16, 0, TILE, TILE,spritesbd->_sheet);
   spritesbd->jogador[2] = sprite_grabBd(32, 0, TILE, TILE,spritesbd->_sheet);
@@ -90,7 +100,7 @@ ALLEGRO_BITMAP *sprite_grabBd(int x, int y, int w, int h, ALLEGRO_BITMAP *sprite
 
 
 void sprites_deinit(SPRITES sprites) {
-  
+
   al_destroy_bitmap(sprites.ship);
 
   al_destroy_bitmap(sprites.ship_shot[0]);

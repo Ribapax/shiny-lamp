@@ -1,5 +1,6 @@
 
 #include "estruturas.h"
+#include <stdio.h>
 
 void player_init(PLAYER *player) {
   player->x = 16;
@@ -94,7 +95,7 @@ void dirt_draw(SPRITESBD spritesbd, listaTerra lista) {
   terra *em_andamento;
 
   em_andamento = lista.inicio;
-  for (int i = 1; i < lista.tamanho; ++i) {
+  for (int i = 1; i <= lista.tamanho; ++i) {
     al_draw_bitmap(spritesbd.dirt, em_andamento->x, em_andamento->y, 0);
     em_andamento = em_andamento->proximo;
   }
@@ -109,7 +110,7 @@ void muro_draw(SPRITESBD spritesbd, listaMuro lista) {
   muro *em_andamento;
 
   em_andamento = lista.inicio;
-  for (int i = 1; i < lista.tamanho; ++i) {
+  for (int i = 1; i <= lista.tamanho; ++i) {
     al_draw_bitmap(spritesbd.muro, em_andamento->x, em_andamento->y, 0);
     em_andamento = em_andamento->proximo;
   }
@@ -119,10 +120,75 @@ void pedra_draw(SPRITESBD spritesbd, listaPedra lista) {
   pedra *em_andamento;
 
   em_andamento = lista.inicio;
-  for (int i = 1; i < lista.tamanho; ++i) {
+  for (int i = 1; i <= lista.tamanho; ++i) {
     al_draw_bitmap(spritesbd.pedra, em_andamento->x, em_andamento->y, 0);
     em_andamento = em_andamento->proximo;
   }
+}
+
+void cristal_draw(SPRITESBD spritesbd, listaCristal lista) {
+  // int espaco = TILE;
+  int frame_display;
+
+  cristal *em_andamento;
+
+  em_andamento = lista.inicio;
+  for (int i = 1; i <= lista.tamanho; ++i) {
+    frame_display = (em_andamento->frame / 5) % 8;
+
+    al_draw_bitmap(spritesbd.cristal[frame_display], em_andamento->x,
+                   em_andamento->y, 0);
+    em_andamento->frame++;
+    em_andamento = em_andamento->proximo;
+  }
+
+  // for (int i = 0; i < CRISTAL_N; i++) {
+  //   if (cristals[i].used == false) {
+  //     frame_display = (cristals[i].frame / 5) % 8;
+  //     al_draw_bitmap(spritesbd.cristal[frame_display], cristals[i].x,
+  //                    cristals[i].y, 0);
+  //     cristals[i].frame++;
+  //   }
+  // al_draw_bitmap(spritesbd.dirt,dirts[i].x,dirts[i].y, 0);
+  // }
+}
+
+void quadrado_draw(SPRITESBD spritesbd, listaQuadrado lista) {
+  // int espaco = TILE;
+  int frame_display;
+
+  quadrado *em_andamento;
+
+  em_andamento = lista.inicio;
+
+  for (int i = 1; i <= lista.tamanho; i++) {
+    frame_display = (em_andamento->frame / 5) % 4;
+
+    al_draw_bitmap(spritesbd.quadrado[frame_display], em_andamento->x,
+                   em_andamento->y, 0);
+    em_andamento->frame++;
+    em_andamento = em_andamento->proximo;
+  }
+
+}
+
+void borboleta_draw(SPRITESBD spritesbd, listaBorboleta lista) {
+  // int espaco = TILE;
+  int frame_display;
+
+  borboleta *em_andamento;
+
+  em_andamento = lista.inicio;
+
+  for (int i = 1; i <= lista.tamanho; i++) {
+    frame_display = (em_andamento->frame / 5) % 4;
+
+    al_draw_bitmap(spritesbd.borboleta[frame_display], em_andamento->x,
+                   em_andamento->y, 0);
+    em_andamento->frame++;
+    em_andamento = em_andamento->proximo;
+  }
+
 }
 
 void iniciaListaMuro(listaMuro *lista) {
@@ -499,6 +565,204 @@ int removListaParede(listaParede *lista, int x, int y) {
 
 void destruirListaParede(listaParede *lista) {
   parede *remov_elemento;
+
+  while (lista->tamanho > 0) {
+
+    remov_elemento = lista->inicio;
+    lista->inicio = lista->inicio->proximo;
+    if (lista->inicio == NULL)
+      lista->fim = NULL;
+    else
+      lista->inicio->anterior = NULL;
+    free(remov_elemento);
+    lista->tamanho--;
+  }
+}
+
+void iniciaListaQuadrado(listaQuadrado *lista) {
+  lista->inicio = NULL;
+  lista->fim = NULL;
+  lista->tamanho = 0;
+}
+
+int insListaVazQuadrado(listaQuadrado *lista, int x, int y) {
+
+  quadrado *novaQuadrado;
+  if ((novaQuadrado = malloc(sizeof(quadrado))) == NULL)
+    return -1;
+
+  novaQuadrado->x = x;
+  novaQuadrado->y = y;
+  novaQuadrado->frame = 0;
+
+  novaQuadrado->anterior = lista->inicio;
+  novaQuadrado->proximo = lista->fim;
+
+  lista->inicio = novaQuadrado;
+  lista->fim = novaQuadrado;
+  lista->tamanho++;
+  return 0;
+}
+
+int insListaFimQuadrado(listaQuadrado *lista, int x, int y) {
+  quadrado *novaQuadrado;
+  if ((novaQuadrado = malloc(sizeof(quadrado))) == NULL)
+    return -1;
+
+  novaQuadrado->x = x;
+  novaQuadrado->y = y;
+  novaQuadrado->frame = 0;
+
+  novaQuadrado->proximo = NULL;
+  novaQuadrado->anterior = lista->fim;
+
+  lista->fim->proximo = novaQuadrado;
+  lista->fim = novaQuadrado;
+  lista->tamanho++;
+
+  return 0;
+}
+
+int removListaQuadrado(listaQuadrado *lista, int x, int y) {
+  int pos;
+  quadrado *remov_elemento, *em_andamento;
+
+  em_andamento = lista->inicio;
+  for (int i = 1; i < lista->tamanho; ++i) {
+    if (em_andamento->x == x && em_andamento->y == y)
+      pos = i;
+    em_andamento = em_andamento->proximo;
+  }
+
+  if (lista->tamanho == 0)
+    return -1;
+
+  if (pos == 1) { /* remoção do 1° elemento */
+    remov_elemento = lista->inicio;
+    lista->inicio = lista->inicio->proximo;
+    if (lista->inicio == NULL)
+      lista->fim = NULL;
+    else
+      lista->inicio->anterior = NULL;
+  } else if (pos == lista->tamanho) { /* remoção do último elemento */
+    remov_elemento = lista->fim;
+    lista->fim->anterior->proximo = NULL;
+    lista->fim = lista->fim->anterior;
+  } else { /* remoção em outro lugar */
+    em_andamento = lista->inicio;
+    for (int i = 1; i < pos; ++i)
+      em_andamento = em_andamento->proximo;
+    remov_elemento = em_andamento;
+    em_andamento->anterior->proximo = em_andamento->proximo;
+    em_andamento->proximo->anterior = em_andamento->anterior;
+  }
+  // free(remov_elemento->dado);
+  free(remov_elemento);
+  lista->tamanho--;
+  return 0;
+}
+
+void destruirListaQuadrado(listaQuadrado *lista) {
+  quadrado *remov_elemento;
+
+  while (lista->tamanho > 0) {
+
+    remov_elemento = lista->inicio;
+    lista->inicio = lista->inicio->proximo;
+    if (lista->inicio == NULL)
+      lista->fim = NULL;
+    else
+      lista->inicio->anterior = NULL;
+    free(remov_elemento);
+    lista->tamanho--;
+  }
+}
+
+void iniciaListaBorboleta(listaBorboleta *lista) {
+  lista->inicio = NULL;
+  lista->fim = NULL;
+  lista->tamanho = 0;
+}
+
+int insListaVazBorboleta(listaBorboleta *lista, int x, int y) {
+
+  borboleta *novaBorboleta;
+  if ((novaBorboleta = malloc(sizeof(borboleta))) == NULL)
+    return -1;
+
+  novaBorboleta->x = x;
+  novaBorboleta->y = y;
+  novaBorboleta->frame = 0;
+
+  novaBorboleta->anterior = lista->inicio;
+  novaBorboleta->proximo = lista->fim;
+
+  lista->inicio = novaBorboleta;
+  lista->fim = novaBorboleta;
+  lista->tamanho++;
+  return 0;
+}
+
+int insListaFimBorboleta(listaBorboleta *lista, int x, int y) {
+  borboleta *novaBorboleta;
+  if ((novaBorboleta = malloc(sizeof(borboleta))) == NULL)
+    return -1;
+
+  novaBorboleta->x = x;
+  novaBorboleta->y = y;
+  novaBorboleta->frame = 0;
+
+  novaBorboleta->proximo = NULL;
+  novaBorboleta->anterior = lista->fim;
+
+  lista->fim->proximo = novaBorboleta;
+  lista->fim = novaBorboleta;
+  lista->tamanho++;
+
+  return 0;
+}
+
+int removListaBorboleta(listaBorboleta *lista, int x, int y) {
+  int pos;
+  borboleta *remov_elemento, *em_andamento;
+
+  em_andamento = lista->inicio;
+  for (int i = 1; i < lista->tamanho; ++i) {
+    if (em_andamento->x == x && em_andamento->y == y)
+      pos = i;
+    em_andamento = em_andamento->proximo;
+  }
+
+  if (lista->tamanho == 0)
+    return -1;
+
+  if (pos == 1) { /* remoção do 1° elemento */
+    remov_elemento = lista->inicio;
+    lista->inicio = lista->inicio->proximo;
+    if (lista->inicio == NULL)
+      lista->fim = NULL;
+    else
+      lista->inicio->anterior = NULL;
+  } else if (pos == lista->tamanho) { /* remoção do último elemento */
+    remov_elemento = lista->fim;
+    lista->fim->anterior->proximo = NULL;
+    lista->fim = lista->fim->anterior;
+  } else { /* remoção em outro lugar */
+    em_andamento = lista->inicio;
+    for (int i = 1; i < pos; ++i)
+      em_andamento = em_andamento->proximo;
+    remov_elemento = em_andamento;
+    em_andamento->anterior->proximo = em_andamento->proximo;
+    em_andamento->proximo->anterior = em_andamento->anterior;
+  }
+  // free(remov_elemento->dado);
+  free(remov_elemento);
+  lista->tamanho--;
+  return 0;
+}
+
+void destruirListaBorboleta(listaBorboleta *lista) {
+  borboleta *remov_elemento;
 
   while (lista->tamanho > 0) {
 
