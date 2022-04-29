@@ -1,5 +1,6 @@
 
 #include "estruturas.h"
+#include <allegro5/allegro_audio.h>
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -28,10 +29,18 @@ void pedra_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
 
       if (findListaMuro(listMuro, em_andamento->x, prox_y))
         prox_y = em_andamento->y;
-        
+
       if (findListaTerra(listTerra, em_andamento->x, prox_y))
         prox_y = em_andamento->y;
 
+      if (findListaCristal(listCristal, em_andamento->x, prox_y))
+        prox_y = em_andamento->y;
+
+      if (findListaPedra(listPedra, em_andamento->x, prox_y))
+        prox_y = em_andamento->y;
+
+      if (em_andamento->x == player->x && prox_y == player->y)
+        prox_y = em_andamento->y;
 
       em_andamento->y = prox_y;
       em_andamento = em_andamento->proximo;
@@ -43,7 +52,7 @@ void player_update(PLAYER *player, unsigned char *key, listaParede *lista,
                    listaTerra *listTerra, listaCristal *listCristal,
                    listaPedra *listPedra, listaMuro *listMuro,
                    listaQuadrado *listQuadrado, listaBorboleta *listBorboleta,
-                   listaAmoeba *listAmoeba) {
+                   listaAmoeba *listAmoeba, ALLEGRO_SAMPLE *moeda) {
 
   if (player->frame % 6 == 0) {
     int prox_x = player->x, prox_y = player->y;
@@ -77,7 +86,9 @@ void player_update(PLAYER *player, unsigned char *key, listaParede *lista,
     }
 
     removListaTerra(listTerra, prox_x, prox_y);
-    removListaCristal(listCristal, prox_x, prox_y);
+    if (removListaCristal(listCristal, prox_x, prox_y) == 0) {
+      al_play_sample(moeda, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+    };
 
     player->x = prox_x;
     player->y = prox_y;
@@ -317,6 +328,18 @@ bool findListaTerra(listaTerra *lista, int x, int y) {
 
 bool findListaPedra(listaPedra *lista, int x, int y) {
   pedra *em_andamento;
+
+  em_andamento = lista->inicio;
+  for (int i = 1; i <= lista->tamanho; ++i) {
+    if (em_andamento->x == x && em_andamento->y == y)
+      return true;
+    em_andamento = em_andamento->proximo;
+  }
+  return false;
+}
+
+bool findListaCristal(listaCristal *lista, int x, int y) {
+  cristal *em_andamento;
 
   em_andamento = lista->inicio;
   for (int i = 1; i <= lista->tamanho; ++i) {

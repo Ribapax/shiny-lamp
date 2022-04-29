@@ -19,7 +19,6 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
 
-
 long frames;
 long score;
 long score_bd;
@@ -110,10 +109,10 @@ void keyboard_update(ALLEGRO_EVENT *event) {
 
 #define TILE 16
 
-
 // --- audio ---
 
 ALLEGRO_SAMPLE *sample_shot;
+ALLEGRO_SAMPLE *moeda;
 ALLEGRO_SAMPLE *sample_explode[2];
 
 void audio_init() {
@@ -123,6 +122,9 @@ void audio_init() {
 
   sample_shot = al_load_sample("resources/shot.flac");
   must_init(sample_shot, "shot sample");
+
+  moeda = al_load_sample("resources/moeda.wav");
+  must_init(moeda, "shot sample");
 
   sample_explode[0] = al_load_sample("resources/explode1.flac");
   must_init(sample_explode[0], "explode[0] sample");
@@ -212,8 +214,6 @@ typedef struct SHIP {
 } SHIP;
 SHIP ship;
 
-
-
 typedef struct CRISTAL {
   int x, y;
   int frame;
@@ -242,7 +242,6 @@ typedef struct DIRT {
 
 #define DIRTS_N 760
 DIRT dirts[DIRTS_N];
-
 
 // --- aliens ---
 
@@ -305,6 +304,9 @@ void hud_draw(SPRITES sprites) {
 
 int main() {
 
+  int nivel = 1;
+  bool carregaMapa = true;
+
   must_init(al_init(), "allegro");
   must_init(al_install_keyboard(), "keyboard");
 
@@ -347,8 +349,8 @@ int main() {
   // aliens_init();
   // stars_init();
   // dirt_init();
-  //cristal_init();
-  //player_init(&player);
+  // cristal_init();
+  // player_init(&player);
 
   listaParede listaP;
   listaTerra listaT;
@@ -358,8 +360,6 @@ int main() {
   listaQuadrado listaQ;
   listaBorboleta listaB;
   listaAmoeba listaA;
-
-  leMapa("resources/mapas/nivel1",&player , &listaP, &listaT, &listaC,&listaPedra, &listaM,&listaQ,&listaB, &listaA);
 
   frames = 0;
   score = 0;
@@ -371,6 +371,53 @@ int main() {
   al_start_timer(timer);
 
   for (;;) {
+
+    if (carregaMapa) {
+      switch (nivel) {
+      case 1:
+        leMapa("resources/mapas/nivel1", &player, &listaP, &listaT, &listaC,
+               &listaPedra, &listaM, &listaQ, &listaB, &listaA);
+        break;
+      case 2:
+        leMapa("resources/mapas/nivel2", &player, &listaP, &listaT, &listaC,
+               &listaPedra, &listaM, &listaQ, &listaB, &listaA);
+        break;
+      case 3:
+        leMapa("resources/mapas/nivel3", &player, &listaP, &listaT, &listaC,
+               &listaPedra, &listaM, &listaQ, &listaB, &listaA);
+        break;
+      case 4:
+        leMapa("resources/mapas/nivel4", &player, &listaP, &listaT, &listaC,
+               &listaPedra, &listaM, &listaQ, &listaB, &listaA);
+        break;
+      case 5:
+        leMapa("resources/mapas/nivel5", &player, &listaP, &listaT, &listaC,
+               &listaPedra, &listaM, &listaQ, &listaB, &listaA);
+        break;
+      case 6:
+        leMapa("resources/mapas/nivel6", &player, &listaP, &listaT, &listaC,
+               &listaPedra, &listaM, &listaQ, &listaB, &listaA);
+        break;
+      case 7:
+        leMapa("resources/mapas/nivel7", &player, &listaP, &listaT, &listaC,
+               &listaPedra, &listaM, &listaQ, &listaB, &listaA);
+        break;
+      case 8:
+        leMapa("resources/mapas/nivel8", &player, &listaP, &listaT, &listaC,
+               &listaPedra, &listaM, &listaQ, &listaB, &listaA);
+        break;
+      case 9:
+        leMapa("resources/mapas/nivel9", &player, &listaP, &listaT, &listaC,
+               &listaPedra, &listaM, &listaQ, &listaB, &listaA);
+        break;
+      case 10:
+        leMapa("resources/mapas/nivel10", &player, &listaP, &listaT, &listaC,
+               &listaPedra, &listaM, &listaQ, &listaB, &listaA);
+        break;
+      }
+      carregaMapa = false;
+    }
+
     al_wait_for_event(queue, &event);
 
     switch (event.type) {
@@ -378,11 +425,11 @@ int main() {
       // fx_update();
       // shots_update();
       // stars_update();
-      player_update(&player, key, &listaP, &listaT, &listaC,&listaPedra, &listaM,&listaQ,&listaB, &listaA);
-      pedra_update(&player, &listaP, &listaT, &listaC,&listaPedra, &listaM,&listaQ,&listaB, &listaA);
+      player_update(&player, key, &listaP, &listaT, &listaC, &listaPedra,
+                    &listaM, &listaQ, &listaB, &listaA, moeda);
+      pedra_update(&player, &listaP, &listaT, &listaC, &listaPedra, &listaM,
+                   &listaQ, &listaB, &listaA);
 
-      // ship_update();
-      // aliens_update();
       redraw = true;
       frames++;
       break;
@@ -417,12 +464,31 @@ int main() {
       amoeba_draw(spritesbd, listaA);
       player_draw(player, key, spritesbd);
 
-
       hud_draw(sprites);
 
       disp_post_draw();
       redraw = false;
     }
+    if (frames % 10 == 0) {
+
+      if (key[ALLEGRO_KEY_PGUP]) {
+        nivel++;
+        if (nivel > 10)
+          nivel = 10;
+        carregaMapa = true;
+      }
+      if (key[ALLEGRO_KEY_PGDN]) {
+        nivel--;
+        if (nivel < 1)
+          nivel = 1;
+        carregaMapa = true;
+      }
+    }
+
+    if(key[ALLEGRO_KEY_ESCAPE]){
+      done = true;
+    }
+
   }
 
   sprites_deinit(sprites);

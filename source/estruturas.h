@@ -4,6 +4,7 @@
 #include "helper.h"
 #include "sprites.h"
 #include <allegro5/allegro5.h>
+#include <allegro5/allegro_audio.h>
 #include <stdlib.h>
 
 #define PLAYER_MAX_X (BUFFER_W - 2 * TILE)
@@ -215,7 +216,7 @@ void player_update(PLAYER *player, unsigned char *key, listaParede *lista,
                    listaTerra *listTerra, listaCristal *listCristal,
                    listaPedra *listPedra, listaMuro *listMuro,
                    listaQuadrado *listQuadrado, listaBorboleta *listBorboleta,
-                   listaAmoeba *listAmoeba);
+                   listaAmoeba *listAmoeba,ALLEGRO_SAMPLE *moeda);
 
 void player_draw(PLAYER player, unsigned char *key, SPRITESBD spritesbd);
 
@@ -240,6 +241,8 @@ bool findListaMuro(listaMuro *lista, int x, int y);
 bool findListaPedra(listaPedra *lista, int x, int y);
 
 bool findListaTerra(listaTerra *lista, int x, int y);
+
+bool findListaCristal(listaCristal *lista, int x, int y);
 
 void pedra_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
                   listaCristal *listCristal, listaPedra *listPedra,
