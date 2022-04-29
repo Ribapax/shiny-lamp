@@ -112,6 +112,109 @@ void pedra_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
   }
 }
 
+
+void cristal_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
+                  listaCristal *listCristal, listaPedra *listPedra,
+                  listaMuro *listMuro, listaQuadrado *listQuadrado,
+                  listaBorboleta *listBorboleta, listaAmoeba *listAmoeba) {
+
+  if (player->frame % 8 == 0) {
+
+    int prox_y;
+    cristal *em_andamento;
+
+    em_andamento = listCristal->inicio;
+
+    for (int i = 1; i <= listCristal->tamanho; ++i) {
+      prox_y = em_andamento->y + 16;
+
+      if (em_andamento->x < 16)
+        em_andamento->x = 16;
+
+      if (em_andamento->x > PLAYER_MAX_X)
+        em_andamento->x = PLAYER_MAX_X;
+      if (prox_y > PLAYER_MAX_Y)
+        prox_y = PLAYER_MAX_Y;
+
+      if (findListaMuro(listMuro, em_andamento->x, prox_y)) {
+        prox_y = em_andamento->y;
+        if (posicaoLivrePedra(em_andamento->x - 16, prox_y, lista, listTerra,
+                              listCristal, listPedra, listMuro, listQuadrado,
+                              listBorboleta, listAmoeba) &&
+            posicaoLivrePedra(em_andamento->x - 16, prox_y + 16, lista,
+                              listTerra, listCristal, listPedra, listMuro,
+                              listQuadrado, listBorboleta, listAmoeba) &&
+            ((player->x != em_andamento->x - 16 || player->y != prox_y) &&
+             (player->x != em_andamento->x - 16 || player->y != prox_y + 16))) {
+          em_andamento->x = em_andamento->x - 16;
+        }
+        if (posicaoLivrePedra(em_andamento->x + 16, prox_y, lista, listTerra,
+                              listCristal, listPedra, listMuro, listQuadrado,
+                              listBorboleta, listAmoeba) &&
+            posicaoLivrePedra(em_andamento->x + 16, prox_y + 16, lista,
+                              listTerra, listCristal, listPedra, listMuro,
+                              listQuadrado, listBorboleta, listAmoeba) &&
+            ((player->x != em_andamento->x + 16 || player->y != prox_y) &&
+             (player->x != em_andamento->x + 16 || player->y != prox_y + 16))) {
+          em_andamento->x = em_andamento->x + 16;
+        }
+      } else if (findListaTerra(listTerra, em_andamento->x, prox_y))
+        prox_y = em_andamento->y;
+
+      else if (findListaCristal(listCristal, em_andamento->x, prox_y)) {
+        prox_y = em_andamento->y;
+        if (posicaoLivrePedra(em_andamento->x - 16, prox_y, lista, listTerra,
+                              listCristal, listPedra, listMuro, listQuadrado,
+                              listBorboleta, listAmoeba) &&
+            posicaoLivrePedra(em_andamento->x - 16, prox_y + 16, lista,
+                              listTerra, listCristal, listPedra, listMuro,
+                              listQuadrado, listBorboleta, listAmoeba) &&
+            ((player->x != em_andamento->x - 16 || player->y != prox_y) &&
+             (player->x != em_andamento->x - 16 || player->y != prox_y + 16))) {
+          em_andamento->x = em_andamento->x - 16;
+        }
+        if (posicaoLivrePedra(em_andamento->x + 16, prox_y, lista, listTerra,
+                              listCristal, listPedra, listMuro, listQuadrado,
+                              listBorboleta, listAmoeba) &&
+            posicaoLivrePedra(em_andamento->x + 16, prox_y + 16, lista,
+                              listTerra, listCristal, listPedra, listMuro,
+                              listQuadrado, listBorboleta, listAmoeba) &&
+            ((player->x != em_andamento->x + 16 || player->y != prox_y) &&
+             (player->x != em_andamento->x + 16 || player->y != prox_y + 16))) {
+          em_andamento->x = em_andamento->x + 16;
+        }
+
+      } else if (findListaPedra(listPedra, em_andamento->x, prox_y)) {
+        prox_y = em_andamento->y;
+        if (posicaoLivrePedra(em_andamento->x - 16, prox_y, lista, listTerra,
+                              listCristal, listPedra, listMuro, listQuadrado,
+                              listBorboleta, listAmoeba) &&
+            posicaoLivrePedra(em_andamento->x - 16, prox_y + 16, lista,
+                              listTerra, listCristal, listPedra, listMuro,
+                              listQuadrado, listBorboleta, listAmoeba) &&
+            ((player->x != em_andamento->x - 16 || player->y != prox_y) &&
+             (player->x != em_andamento->x - 16 || player->y != prox_y + 16))) {
+          em_andamento->x = em_andamento->x - 16;
+        }
+        if (posicaoLivrePedra(em_andamento->x + 16, prox_y, lista, listTerra,
+                              listCristal, listPedra, listMuro, listQuadrado,
+                              listBorboleta, listAmoeba) &&
+            posicaoLivrePedra(em_andamento->x + 16, prox_y + 16, lista,
+                              listTerra, listCristal, listPedra, listMuro,
+                              listQuadrado, listBorboleta, listAmoeba) &&
+            ((player->x != em_andamento->x + 16 || player->y != prox_y) &&
+             (player->x != em_andamento->x + 16 || player->y != prox_y + 16))) {
+          em_andamento->x = em_andamento->x + 16;
+        }
+      } else if (em_andamento->x == player->x && prox_y == player->y)
+        prox_y = em_andamento->y;
+
+      em_andamento->y = prox_y;
+      em_andamento = em_andamento->proximo;
+    }
+  }
+}
+
 void player_update(PLAYER *player, unsigned char *key, listaParede *lista,
                    listaTerra *listTerra, listaCristal *listCristal,
                    listaPedra *listPedra, listaMuro *listMuro,

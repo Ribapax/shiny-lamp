@@ -216,7 +216,7 @@ void player_update(PLAYER *player, unsigned char *key, listaParede *lista,
                    listaTerra *listTerra, listaCristal *listCristal,
                    listaPedra *listPedra, listaMuro *listMuro,
                    listaQuadrado *listQuadrado, listaBorboleta *listBorboleta,
-                   listaAmoeba *listAmoeba,ALLEGRO_SAMPLE *moeda);
+                   listaAmoeba *listAmoeba, ALLEGRO_SAMPLE *moeda);
 
 void player_draw(PLAYER player, unsigned char *key, SPRITESBD spritesbd);
 
@@ -240,7 +240,7 @@ bool findListaMuro(listaMuro *lista, int x, int y);
 
 bool findListaPedra(listaPedra *lista, int x, int y);
 
-void changeListaPedra(listaPedra *lista, int x, int y, int x_novo) ;
+void changeListaPedra(listaPedra *lista, int x, int y, int x_novo);
 
 bool findListaTerra(listaTerra *lista, int x, int y);
 
@@ -253,17 +253,20 @@ void pedra_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
                   listaMuro *listMuro, listaQuadrado *listQuadrado,
                   listaBorboleta *listBorboleta, listaAmoeba *listAmoeba);
 
-bool posicaoLivrePedra(int x,int y,listaParede *lista,
-                   listaTerra *listTerra, listaCristal *listCristal,
-                   listaPedra *listPedra, listaMuro *listMuro,
-                   listaQuadrado *listQuadrado, listaBorboleta *listBorboleta,
-                   listaAmoeba *listAmoeba);
+void cristal_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
+                    listaCristal *listCristal, listaPedra *listPedra,
+                    listaMuro *listMuro, listaQuadrado *listQuadrado,
+                    listaBorboleta *listBorboleta, listaAmoeba *listAmoeba);
+
+bool posicaoLivrePedra(int x, int y, listaParede *lista, listaTerra *listTerra,
+                       listaCristal *listCristal, listaPedra *listPedra,
+                       listaMuro *listMuro, listaQuadrado *listQuadrado,
+                       listaBorboleta *listBorboleta, listaAmoeba *listAmoeba);
 
 bool caiProLadoPedra(int x, int y, PLAYER *player, listaParede *lista,
                      listaTerra *listTerra, listaCristal *listCristal,
                      listaPedra *listPedra, listaMuro *listMuro,
                      listaQuadrado *listQuadrado, listaBorboleta *listBorboleta,
                      listaAmoeba *listAmoeba);
-
 
 #endif

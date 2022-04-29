@@ -429,6 +429,8 @@ int main() {
                     &listaM, &listaQ, &listaB, &listaA, moeda);
       pedra_update(&player, &listaP, &listaT, &listaC, &listaPedra, &listaM,
                    &listaQ, &listaB, &listaA);
+      cristal_update(&player, &listaP, &listaT, &listaC, &listaPedra, &listaM,
+                   &listaQ, &listaB, &listaA);
 
       redraw = true;
       frames++;
