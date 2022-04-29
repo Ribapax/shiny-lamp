@@ -77,6 +77,7 @@ typedef struct listaCristal {
 typedef struct quadrado {
   int x, y;
   int frame;
+  int dir; //1 direita 2 baixo -1 esquerda -2 cima
   struct quadrado *proximo;
   struct quadrado *anterior;
 } quadrado;
@@ -90,6 +91,7 @@ typedef struct listaQuadrado {
 typedef struct borboleta {
   int x, y;
   int frame;
+  int dir; //1 direita 2 baixo -1 esquerda -2 cima
   struct borboleta *proximo;
   struct borboleta *anterior;
 } borboleta;
@@ -258,10 +260,21 @@ void cristal_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
                     listaMuro *listMuro, listaQuadrado *listQuadrado,
                     listaBorboleta *listBorboleta, listaAmoeba *listAmoeba);
 
-bool posicaoLivrePedra(int x, int y, listaParede *lista, listaTerra *listTerra,
+bool posicaoLivre(int x, int y, listaParede *lista, listaTerra *listTerra,
                        listaCristal *listCristal, listaPedra *listPedra,
                        listaMuro *listMuro, listaQuadrado *listQuadrado,
                        listaBorboleta *listBorboleta, listaAmoeba *listAmoeba);
+
+
+void quadrado_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
+                     listaCristal *listCristal, listaPedra *listPedra,
+                     listaMuro *listMuro, listaQuadrado *listQuadrado,
+                     listaBorboleta *listBorboleta, listaAmoeba *listAmoeba);
+
+void borboleta_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
+                     listaCristal *listCristal, listaPedra *listPedra,
+                     listaMuro *listMuro, listaQuadrado *listQuadrado,
+                     listaBorboleta *listBorboleta, listaAmoeba *listAmoeba);
 
 bool caiProLadoPedra(int x, int y, PLAYER *player, listaParede *lista,
                      listaTerra *listTerra, listaCristal *listCristal,

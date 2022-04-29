@@ -18,6 +18,7 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
+#include <stdbool.h>
 
 long frames;
 long score;
@@ -29,19 +30,6 @@ float between_f(float lo, float hi) {
   return lo + ((float)rand() / (float)RAND_MAX) * (hi - lo);
 }
 
-bool collide(int ax1, int ay1, int ax2, int ay2, int bx1, int by1, int bx2,
-             int by2) {
-  if (ax1 > bx2)
-    return false;
-  if (ax2 < bx1)
-    return false;
-  if (ay1 > by2)
-    return false;
-  if (ay2 < by1)
-    return false;
-
-  return true;
-}
 
 // --- display ---
 
@@ -201,66 +189,6 @@ void fx_draw(SPRITES sprites) {
   }
 }
 
-#define SHIP_SPEED 3
-#define SHIP_MAX_X (BUFFER_W - SHIP_W)
-#define SHIP_MAX_Y (BUFFER_H - SHIP_H)
-
-typedef struct SHIP {
-  int x, y;
-  int shot_timer;
-  int lives;
-  int respawn_timer;
-  int invincible_timer;
-} SHIP;
-SHIP ship;
-
-typedef struct CRISTAL {
-  int x, y;
-  int frame;
-  // bool ship;
-  bool used;
-} CRISTAL;
-
-#define CRISTAL_N 760
-CRISTAL cristals[CRISTAL_N];
-
-void cristal_collide(int x, int y) {
-  for (int i = 0; i < CRISTAL_N; i++) {
-    if (cristals[i].x == x && cristals[i].y == y) {
-      cristals[i].used = true;
-      score = score + 200;
-    }
-  }
-}
-
-typedef struct DIRT {
-  int x, y;
-  // int frame;
-  // bool ship;
-  bool used;
-} DIRT;
-
-#define DIRTS_N 760
-DIRT dirts[DIRTS_N];
-
-// --- aliens ---
-
-typedef enum ALIEN_TYPE {
-  ALIEN_TYPE_BUG = 0,
-  ALIEN_TYPE_ARROW,
-  ALIEN_TYPE_THICCBOI,
-  ALIEN_TYPE_N
-} ALIEN_TYPE;
-
-typedef struct ALIEN {
-  int x, y;
-  ALIEN_TYPE type;
-  int shot_timer;
-  int blink;
-  int life;
-  bool used;
-} ALIEN;
-
 // --- hud ---
 
 ALLEGRO_FONT *font;
@@ -286,18 +214,51 @@ void hud_update() {
   }
 }
 
-void hud_draw(SPRITES sprites) {
-  al_draw_textf(font, al_map_rgb_f(1, 1, 1), 1, 1, 0, "%06ld", score_display);
+void hud_draw(ALLEGRO_FONT *font, PLAYER *player, SPRITESBD *sprites) {
+  al_draw_textf(font, al_map_rgb(255, 247, 0), 16, 0, 0, "%d", 10);
+  // al_draw_scaled_bitmap(sprites->cristal[0], 0, 0, TILE, TILE, 105, 0, TILE,
+  // TILE, 0);
+  al_draw_bitmap(sprites->cristal[0], 105, 0, 0);
+  al_draw_textf(font, al_map_rgb(255, 255, 255), 155, 0, 0, "%d", 20);
+  al_draw_bitmap(sprites->jogador[0], 300, 0, 0);
+  al_draw_textf(font, al_map_rgb(255, 255, 255), 340, 0, 0, "%d", 3);
+  al_draw_textf(font, al_map_rgb(255, 247, 0), 500, 0, 0, "%02d", 7);
+  al_draw_textf(font, al_map_rgb(255, 255, 255), 550, 0, ALLEGRO_ALIGN_CENTRE,
+                "%d", 120);
+  // al_draw_textf(font, al_map_rgb(255, 255, 255), 980, -8, 0, "%06d",
+  // player->score);
+}
 
-  int spacing = LIFE_W + 1;
-
-  for (int i = 0; i < ship.lives; i++)
-    al_draw_bitmap(sprites.life, 1 + (i * spacing), 10, 0);
-  // al_draw_bitmap(spritesbd.wall, 50, 10, 0);
-
-  if (ship.lives < 0)
-    al_draw_text(font, al_map_rgb_f(1, 1, 1), BUFFER_W / 2, BUFFER_H / 2,
-                 ALLEGRO_ALIGN_CENTER, "G A M E  O V E R");
+void help_draw(ALLEGRO_FONT *font) {
+  al_draw_filled_rectangle(0, 0, BUFFER_W, BUFFER_H, al_map_rgba(0, 0, 0, 100));
+  al_draw_filled_rectangle(TILE * 2, TILE * 3, BUFFER_W - TILE * 2,
+                           BUFFER_H - TILE * 2,
+                           al_map_rgba(100, 100, 100, 255));
+  al_draw_text(font, al_map_rgb(0, 0, 0), BUFFER_W / 2, TILE * 4,
+               ALLEGRO_ALIGN_CENTRE, "HELP");
+  al_draw_multiline_text(
+      font, al_map_rgb(0, 0, 0), BUFFER_W / 2, TILE * 6, BUFFER_W, 34,
+      ALLEGRO_ALIGN_CENTRE,
+      "Seguem as instruções para jogar o jogo");
+  al_draw_multiline_text(
+      font, al_map_rgb(0, 0, 0), TILE * 3, TILE * 8, BUFFER_W * 8 / 10, 16, 0,
+      "Colete os cristais necessários para liberar a saida, não esqueça de olhar para cima "
+      "a previsão do tempo é de pedra.");
+  al_draw_multiline_text(
+      font, al_map_rgb(0, 0, 0), TILE * 3, TILE * 11, BUFFER_W * 8 / 10, 16, 0,
+      "- Use as teclas direcionais para mover o seu personagem.");
+  /* al_draw_multiline_text(font, al_map_rgb(0, 0, 0), 340, 360, 600, 16, 0,
+                         "- Press R to restart your level, but be aware that "
+                         "you will lose one life.");*/
+  /* al_draw_multiline_text(font, al_map_rgb(0, 0, 0), TILE * 3, TILE * 13, 600,
+                         16, 0,
+                         "- Press K L N together to get 5 extra lives, but you "
+                         "can use it only once."); */
+  al_draw_text(font, al_map_rgb(0, 0, 0), (BUFFER_W / 2), TILE * 19,
+               ALLEGRO_ALIGN_CENTRE,
+               "Desenvolvido por Mateus Ribamar da Paixão");
+  al_draw_text(font, al_map_rgb(0, 0, 0), (BUFFER_W / 2) + 40, TILE * 20, 0,
+               "Press h or F1 to play");
 }
 
 // --- main ---
@@ -306,6 +267,8 @@ int main() {
 
   int nivel = 1;
   bool carregaMapa = true;
+  bool flagHelp = false;
+  bool flagOver = false;
 
   must_init(al_init(), "allegro");
   must_init(al_install_keyboard(), "keyboard");
@@ -425,15 +388,21 @@ int main() {
       // fx_update();
       // shots_update();
       // stars_update();
-      player_update(&player, key, &listaP, &listaT, &listaC, &listaPedra,
-                    &listaM, &listaQ, &listaB, &listaA, moeda);
-      pedra_update(&player, &listaP, &listaT, &listaC, &listaPedra, &listaM,
-                   &listaQ, &listaB, &listaA);
-      cristal_update(&player, &listaP, &listaT, &listaC, &listaPedra, &listaM,
-                   &listaQ, &listaB, &listaA);
+      if (!flagHelp) {
 
-      redraw = true;
+        player_update(&player, key, &listaP, &listaT, &listaC, &listaPedra,
+                      &listaM, &listaQ, &listaB, &listaA, moeda);
+        pedra_update(&player, &listaP, &listaT, &listaC, &listaPedra, &listaM,
+                     &listaQ, &listaB, &listaA);
+        cristal_update(&player, &listaP, &listaT, &listaC, &listaPedra, &listaM,
+                       &listaQ, &listaB, &listaA);
+        quadrado_update(&player, &listaP, &listaT, &listaC, &listaPedra, &listaM,
+                       &listaQ, &listaB, &listaA);
+        borboleta_update(&player, &listaP, &listaT, &listaC, &listaPedra, &listaM,
+                       &listaQ, &listaB, &listaA);
+      }
       frames++;
+      redraw = true;
       break;
 
     case ALLEGRO_EVENT_DISPLAY_CLOSE:
@@ -456,6 +425,7 @@ int main() {
       // shots_draw(sprites);
       // fx_draw(sprites);
       // ship_draw(sprites);
+
       wall_draw(spritesbd, listaP);
       muro_draw(spritesbd, listaM);
       pedra_draw(spritesbd, listaPedra);
@@ -465,32 +435,40 @@ int main() {
       borboleta_draw(spritesbd, listaB);
       amoeba_draw(spritesbd, listaA);
       player_draw(player, key, spritesbd);
-
-      hud_draw(sprites);
+      hud_draw(font, &player, &spritesbd);
+      if (flagHelp) {
+        help_draw(font);
+      }
 
       disp_post_draw();
       redraw = false;
     }
     if (frames % 10 == 0) {
+      if (key[ALLEGRO_KEY_H] || key[ALLEGRO_KEY_F1]) {
+        if (flagHelp)
+          flagHelp = false;
+        else
+          flagHelp = true;
+      }
 
       if (key[ALLEGRO_KEY_PGUP]) {
-        nivel++;
-        if (nivel > 10)
-          nivel = 10;
-        carregaMapa = true;
-      }
-      if (key[ALLEGRO_KEY_PGDN]) {
         nivel--;
         if (nivel < 1)
           nivel = 1;
         carregaMapa = true;
       }
+      if (key[ALLEGRO_KEY_PGDN]) {
+        nivel++;
+        if (nivel > 10)
+          nivel = 10;
+        carregaMapa = true;
+        
+      }
     }
 
-    if(key[ALLEGRO_KEY_ESCAPE]){
+    if (key[ALLEGRO_KEY_ESCAPE]) {
       done = true;
     }
-
   }
 
   sprites_deinit(sprites);
