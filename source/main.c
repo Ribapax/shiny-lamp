@@ -14,8 +14,9 @@
 #include <stdbool.h>
 #include "help.h"
 
+
 long frames;
-long score;
+int score=0;
 long score_bd;
 
 int between(int lo, int hi) { return lo + (rand() % (hi - lo)); }
@@ -91,6 +92,35 @@ void keyboard_update(ALLEGRO_EVENT *event) {
 
 #define TILE 16
 
+void salvaScore(int score){
+  FILE *arq;
+
+  arq = fopen("resources/score.txt", "w");
+
+  if (!arq) {
+    perror("Erro ao abrir arquivo");
+    exit(1);
+  }
+  fprintf(arq,"%d", score);
+
+  fclose(arq);
+
+}
+
+void lastScore(int *score){
+  FILE *arq;
+
+  arq = fopen("resources/score.txt", "r");
+
+  if (!arq) {
+    perror("Erro ao abrir arquivo");
+    exit(1);
+  }
+  fscanf(arq,"%d", score);
+
+  fclose(arq);
+
+}
 
 
 
@@ -125,7 +155,7 @@ int main() {
   int nivel = 1;
   bool carregaMapa = true;
   bool flagHelp = false;
-  bool flagOver = false;
+  //bool flagOver = false;
 
   must_init(al_init(), "allegro");
   must_init(al_install_keyboard(), "keyboard");
@@ -171,7 +201,7 @@ int main() {
   listaAmoeba listaA;
 
   frames = 0;
-  score = 0;
+  lastScore(&score);
 
   bool done = false;
   bool redraw = true;
@@ -235,7 +265,7 @@ int main() {
       if (!flagHelp) {
 
         player_update(&player, key, &listaP, &listaT, &listaC, &listaPedra,
-                      &listaM, &listaQ, &listaB, &listaA, moeda);
+                      &listaM, &listaQ, &listaB, &listaA, moeda, &score);
         pedra_update(&player, &listaP, &listaT, &listaC, &listaPedra, &listaM,
                      &listaQ, &listaB, &listaA);
         cristal_update(&player, &listaP, &listaT, &listaC, &listaPedra, &listaM,
@@ -273,7 +303,7 @@ int main() {
       borboleta_draw(spritesbd, listaB);
       amoeba_draw(spritesbd, listaA);
       player_draw(player, key, spritesbd);
-      hud_draw(font, &player, &spritesbd);
+      hud_draw(font, &player, &spritesbd, score);
       
       if (flagHelp) {
         help_draw(font);
@@ -310,12 +340,22 @@ int main() {
     }
   }
 
+  salvaScore(score);
   sprites_deinit(sprites);
   hud_deinit();
   audio_deinit(moeda);
   disp_deinit();
   al_destroy_timer(timer);
   al_destroy_event_queue(queue);
+  //destruirListaAmoeba()
+  destruirListaParede(&listaP);
+  destruirListaTerra(&listaT);
+  destruirListaCristal(&listaC);
+  destruirListaPedra(&listaPedra);
+  destruirListaMuro(&listaM);
+  destruirListaQuadrado(&listaQ);
+  destruirListaBorboleta(&listaB);
+  destruirListaAmoeba(&listaA);
 
   return 0;
 }

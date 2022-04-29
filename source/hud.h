@@ -5,6 +5,6 @@
 #include "estruturas.h"
 
 
-void hud_draw(ALLEGRO_FONT *font, PLAYER *player, SPRITESBD *sprites);
+void hud_draw(ALLEGRO_FONT *font, PLAYER *player, SPRITESBD *sprites, int score);
 
 #endif
