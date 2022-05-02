@@ -3,16 +3,18 @@
 void cristal_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
                     listaCristal *listCristal, listaPedra *listPedra,
                     listaMuro *listMuro, listaQuadrado *listQuadrado,
-                    listaBorboleta *listBorboleta, listaAmoeba *listAmoeba) {
+                    listaBorboleta *listBorboleta, listaAmoeba *listAmoeba,
+                    bool *teste) {
 
   if (player->frame % 8 == 0) {
 
-    int prox_y;
+    int prox_y, ant_y;
     cristal *em_andamento;
 
     em_andamento = listCristal->inicio;
 
     for (int i = 1; i <= listCristal->tamanho; ++i) {
+      ant_y = em_andamento->y;
       prox_y = em_andamento->y + 16;
 
       if (em_andamento->x < 16)
@@ -22,6 +24,10 @@ void cristal_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
         em_andamento->x = PLAYER_MAX_X;
       if (prox_y > PLAYER_MAX_Y)
         prox_y = PLAYER_MAX_Y;
+
+      if (player->x == em_andamento->x && player->y == prox_y &&
+          em_andamento->velocidade != 0)
+        *teste = true;
 
       if (findListaMuro(listMuro, em_andamento->x, prox_y)) {
         prox_y = em_andamento->y;
@@ -97,11 +103,16 @@ void cristal_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
         prox_y = em_andamento->y;
 
       em_andamento->y = prox_y;
+      if(ant_y == em_andamento->y){
+        em_andamento->velocidade = 0;
+      }
+      else {
+        em_andamento->velocidade = 1;
+      }
       em_andamento = em_andamento->proximo;
     }
   }
 }
-
 
 void cristal_draw(SPRITESBD spritesbd, listaCristal lista) {
   // int espaco = TILE;
@@ -129,9 +140,6 @@ void cristal_draw(SPRITESBD spritesbd, listaCristal lista) {
   // al_draw_bitmap(spritesbd.dirt,dirts[i].x,dirts[i].y, 0);
   // }
 }
-
-
-
 
 void iniciaListaCristal(listaCristal *lista) {
   lista->inicio = NULL;
@@ -176,7 +184,6 @@ int insListaFimCristal(listaCristal *lista, int x, int y) {
 
   return 0;
 }
-
 
 void destruirListaCristal(listaCristal *lista) {
   cristal *remov_elemento;

@@ -23,7 +23,7 @@ void quadrado_draw(SPRITESBD spritesbd, listaQuadrado lista);
 void quadrado_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
                      listaCristal *listCristal, listaPedra *listPedra,
                      listaMuro *listMuro, listaQuadrado *listQuadrado,
-                     listaBorboleta *listBorboleta, listaAmoeba *listAmoeba);
+                     listaBorboleta *listBorboleta, listaAmoeba *listAmoeba, bool *teste);
 
 
 #endif

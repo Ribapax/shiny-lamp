@@ -34,6 +34,7 @@ typedef struct listaMuro {
 
 typedef struct pedra {
   int x, y;
+  int velocidade;
   struct pedra *proximo;
   struct pedra *anterior;
 } pedra;
@@ -47,6 +48,7 @@ typedef struct listaPedra {
 typedef struct cristal {
   int x, y;
   int frame;
+  int velocidade;
   struct cristal *proximo;
   struct cristal *anterior;
 } cristal;
@@ -113,8 +115,18 @@ typedef struct listaParede {
 typedef struct PLAYER {
   int x, y;
   int frame;
+  int cristais;
+  int lives;
+  int cristnec;
+  int pont;
 } PLAYER;
 
+typedef struct porta{
+  int x,y;
+}porta;
+
+
+void porta_draw(SPRITESBD spritesbd, porta portal, PLAYER player);
 
 
 int removListaCristal(listaCristal *lista, int x, int y);

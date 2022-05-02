@@ -1,8 +1,9 @@
 
 #include "audio.h"
-#include "hud.h"
 #include "estruturas.h"
+#include "help.h"
 #include "helper.h"
+#include "hud.h"
 #include "mapas.h"
 #include "sprites.h"
 #include <allegro5/allegro5.h>
@@ -12,11 +13,9 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
 #include <stdbool.h>
-#include "help.h"
-
 
 long frames;
-int score=0;
+int score = 0;
 long score_bd;
 
 int between(int lo, int hi) { return lo + (rand() % (hi - lo)); }
@@ -24,7 +23,6 @@ int between(int lo, int hi) { return lo + (rand() % (hi - lo)); }
 float between_f(float lo, float hi) {
   return lo + ((float)rand() / (float)RAND_MAX) * (hi - lo);
 }
-
 
 // --- display ---
 
@@ -92,7 +90,7 @@ void keyboard_update(ALLEGRO_EVENT *event) {
 
 #define TILE 16
 
-void salvaScore(int score){
+void salvaScore(int score) {
   FILE *arq;
 
   arq = fopen("resources/score.txt", "w");
@@ -101,13 +99,12 @@ void salvaScore(int score){
     perror("Erro ao abrir arquivo");
     exit(1);
   }
-  fprintf(arq,"%d", score);
+  fprintf(arq, "%d", score);
 
   fclose(arq);
-
 }
 
-void lastScore(int *score){
+void lastScore(int *score) {
   FILE *arq;
 
   arq = fopen("resources/score.txt", "r");
@@ -116,14 +113,10 @@ void lastScore(int *score){
     perror("Erro ao abrir arquivo");
     exit(1);
   }
-  fscanf(arq,"%d", score);
+  fscanf(arq, "%d", score);
 
   fclose(arq);
-
 }
-
-
-
 
 ALLEGRO_FONT *font;
 long score_display;
@@ -153,12 +146,16 @@ void hud_update() {
 int main() {
 
   int nivel = 1;
+  int mouse_x, mouse_y;
+  int ultimo_score;
   bool carregaMapa = true;
   bool flagHelp = false;
-  //bool flagOver = false;
+  bool flagOver = false;
 
   must_init(al_init(), "allegro");
+
   must_init(al_install_keyboard(), "keyboard");
+  must_init(al_install_mouse(), "mouse");
 
   ALLEGRO_TIMER *timer = al_create_timer(1.0 / 60.0);
   must_init(timer, "timer");
@@ -168,7 +165,7 @@ int main() {
 
   disp_init();
 
-  ALLEGRO_SAMPLE *moeda=audio_init();
+  ALLEGRO_SAMPLE *moeda = audio_init();
 
   SPRITESBD spritesbd;
   SPRITES sprites;
@@ -186,11 +183,15 @@ int main() {
   al_register_event_source(queue, al_get_keyboard_event_source());
   al_register_event_source(queue, al_get_display_event_source(disp));
   al_register_event_source(queue, al_get_timer_event_source(timer));
+  al_register_event_source(queue, al_get_mouse_event_source());
 
   PLAYER player;
+  player.lives = 3;
+  player.cristnec = 5;
+  player.pont = 100;
 
   keyboard_init();
-  
+
   listaParede listaP;
   listaTerra listaT;
   listaCristal listaC;
@@ -199,9 +200,11 @@ int main() {
   listaQuadrado listaQ;
   listaBorboleta listaB;
   listaAmoeba listaA;
+  porta port;
 
   frames = 0;
-  lastScore(&score);
+  score = 0;
+  lastScore(&ultimo_score);
 
   bool done = false;
   bool redraw = true;
@@ -215,43 +218,43 @@ int main() {
       switch (nivel) {
       case 1:
         leMapa("resources/mapas/nivel1", &player, &listaP, &listaT, &listaC,
-               &listaPedra, &listaM, &listaQ, &listaB, &listaA);
+               &listaPedra, &listaM, &listaQ, &listaB, &listaA, &port);
         break;
       case 2:
         leMapa("resources/mapas/nivel2", &player, &listaP, &listaT, &listaC,
-               &listaPedra, &listaM, &listaQ, &listaB, &listaA);
+               &listaPedra, &listaM, &listaQ, &listaB, &listaA, &port);
         break;
       case 3:
         leMapa("resources/mapas/nivel3", &player, &listaP, &listaT, &listaC,
-               &listaPedra, &listaM, &listaQ, &listaB, &listaA);
+               &listaPedra, &listaM, &listaQ, &listaB, &listaA, &port);
         break;
       case 4:
         leMapa("resources/mapas/nivel4", &player, &listaP, &listaT, &listaC,
-               &listaPedra, &listaM, &listaQ, &listaB, &listaA);
+               &listaPedra, &listaM, &listaQ, &listaB, &listaA, &port);
         break;
       case 5:
         leMapa("resources/mapas/nivel5", &player, &listaP, &listaT, &listaC,
-               &listaPedra, &listaM, &listaQ, &listaB, &listaA);
+               &listaPedra, &listaM, &listaQ, &listaB, &listaA, &port);
         break;
       case 6:
         leMapa("resources/mapas/nivel6", &player, &listaP, &listaT, &listaC,
-               &listaPedra, &listaM, &listaQ, &listaB, &listaA);
+               &listaPedra, &listaM, &listaQ, &listaB, &listaA, &port);
         break;
       case 7:
         leMapa("resources/mapas/nivel7", &player, &listaP, &listaT, &listaC,
-               &listaPedra, &listaM, &listaQ, &listaB, &listaA);
+               &listaPedra, &listaM, &listaQ, &listaB, &listaA, &port);
         break;
       case 8:
         leMapa("resources/mapas/nivel8", &player, &listaP, &listaT, &listaC,
-               &listaPedra, &listaM, &listaQ, &listaB, &listaA);
+               &listaPedra, &listaM, &listaQ, &listaB, &listaA, &port);
         break;
       case 9:
         leMapa("resources/mapas/nivel9", &player, &listaP, &listaT, &listaC,
-               &listaPedra, &listaM, &listaQ, &listaB, &listaA);
+               &listaPedra, &listaM, &listaQ, &listaB, &listaA, &port);
         break;
       case 10:
         leMapa("resources/mapas/nivel10", &player, &listaP, &listaT, &listaC,
-               &listaPedra, &listaM, &listaQ, &listaB, &listaA);
+               &listaPedra, &listaM, &listaQ, &listaB, &listaA, &port);
         break;
       }
       carregaMapa = false;
@@ -265,18 +268,31 @@ int main() {
       if (!flagHelp) {
 
         player_update(&player, key, &listaP, &listaT, &listaC, &listaPedra,
-                      &listaM, &listaQ, &listaB, &listaA, moeda, &score);
+                      &listaM, &listaQ, &listaB, &listaA, moeda, &score,&nivel,&carregaMapa, port);
         pedra_update(&player, &listaP, &listaT, &listaC, &listaPedra, &listaM,
-                     &listaQ, &listaB, &listaA);
+                     &listaQ, &listaB, &listaA, &flagOver);
         cristal_update(&player, &listaP, &listaT, &listaC, &listaPedra, &listaM,
-                       &listaQ, &listaB, &listaA);
-        quadrado_update(&player, &listaP, &listaT, &listaC, &listaPedra, &listaM,
-                       &listaQ, &listaB, &listaA);
-        borboleta_update(&player, &listaP, &listaT, &listaC, &listaPedra, &listaM,
-                       &listaQ, &listaB, &listaA);
+                       &listaQ, &listaB, &listaA, &flagOver);
+        quadrado_update(&player, &listaP, &listaT, &listaC, &listaPedra,
+                        &listaM, &listaQ, &listaB, &listaA, &flagOver);
+        borboleta_update(&player, &listaP, &listaT, &listaC, &listaPedra,
+                         &listaM, &listaQ, &listaB, &listaA , &flagOver);
+
+        if (flagOver && player.lives > 0) {
+          player.lives--;
+          carregaMapa = true;
+          flagOver = false;
+        } else if (player.lives == 0) {
+          done = true;
+        }
       }
+
       frames++;
       redraw = true;
+      break;
+    case ALLEGRO_EVENT_MOUSE_AXES:
+      mouse_x = event.mouse.x /16;
+      mouse_y = event.mouse.y /16;
       break;
 
     case ALLEGRO_EVENT_DISPLAY_CLOSE:
@@ -292,7 +308,7 @@ int main() {
     if (redraw && al_is_event_queue_empty(queue)) {
 
       disp_pre_draw();
-      al_clear_to_color(al_map_rgb(0, 0, 0));
+      al_clear_to_color(al_map_rgb(25, 29, 25));
 
       wall_draw(spritesbd, listaP);
       muro_draw(spritesbd, listaM);
@@ -303,10 +319,11 @@ int main() {
       borboleta_draw(spritesbd, listaB);
       amoeba_draw(spritesbd, listaA);
       player_draw(player, key, spritesbd);
+      porta_draw(spritesbd, port, player);
       hud_draw(font, &player, &spritesbd, score);
-      
+
       if (flagHelp) {
-        help_draw(font);
+        help_draw(font, ultimo_score);
       }
 
       disp_post_draw();
@@ -326,12 +343,19 @@ int main() {
           nivel = 1;
         carregaMapa = true;
       }
+
+      if (key[ALLEGRO_KEY_T]) {
+        if (listaC.inicio != NULL) {
+          player.x = listaC.inicio->x;
+          player.y = listaC.inicio->y;
+        }
+      }
+
       if (key[ALLEGRO_KEY_PGDN]) {
         nivel++;
         if (nivel > 10)
           nivel = 10;
         carregaMapa = true;
-        
       }
     }
 
@@ -347,7 +371,7 @@ int main() {
   disp_deinit();
   al_destroy_timer(timer);
   al_destroy_event_queue(queue);
-  //destruirListaAmoeba()
+  // destruirListaAmoeba()
   destruirListaParede(&listaP);
   destruirListaTerra(&listaT);
   destruirListaCristal(&listaC);

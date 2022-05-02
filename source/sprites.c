@@ -14,6 +14,9 @@ void sprite_init(SPRITESBD *spritesbd, SPRITES *sprites) {
   spritesbd->muro = sprite_grabBd(32, 48, TILE, TILE,spritesbd->_sheet);
   spritesbd->pedra = sprite_grabBd(80, 48, TILE, TILE,spritesbd->_sheet);
 
+  spritesbd->porta[0] = sprite_grabBd(0, 48, TILE, TILE,spritesbd->_sheet);
+  spritesbd->porta[1] = sprite_grabBd(16, 48, TILE, TILE,spritesbd->_sheet);
+
   spritesbd->quadrado[0] = sprite_grabBd(80, 64, TILE, TILE,spritesbd->_sheet);
   spritesbd->quadrado[1] = sprite_grabBd(80, 80, TILE, TILE,spritesbd->_sheet);
   spritesbd->quadrado[2] = sprite_grabBd(80, 96, TILE, TILE,spritesbd->_sheet);

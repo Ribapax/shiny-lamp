@@ -5,7 +5,7 @@
 
 void leMapa(char *mapa, PLAYER *player, listaParede *lista, listaTerra *listTerra,
             listaCristal *listCristal, listaPedra *listPedra,
-            listaMuro *listMuro, listaQuadrado *listQuadrado,  listaBorboleta *listBorboleta, listaAmoeba *listAmoeba) {
+            listaMuro *listMuro, listaQuadrado *listQuadrado,  listaBorboleta *listBorboleta, listaAmoeba *listAmoeba, porta * port) {
 
   int flagParede = 0, flagTerra = 0, flagCristal = 0, flagPedra = 0,
       flagMuro = 0, flagQuadrado = 0, flagBorboleta =0, flagAmoeba =0;
@@ -46,8 +46,12 @@ void leMapa(char *mapa, PLAYER *player, listaParede *lista, listaTerra *listTerr
           insListaFimParede(lista, j * 16, (i + 1) * 16);
         }
         break;
-      case 'X':
-        player_init(player,j*16,(i+1)*16);
+      case 'X':  
+        player_init(player,j*16,(i+1)*16,player->lives);
+        break;
+      case 'P':  
+        port->x = j*16;
+        port->y = (i+1)*16;
         break;
       case '.':
         if (flagTerra == 0) {

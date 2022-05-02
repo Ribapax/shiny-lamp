@@ -1,18 +1,20 @@
 #include "player.h"
+#include "estruturas.h"
 
-
-void player_init(PLAYER *player, int x, int y) {
+void player_init(PLAYER *player, int x, int y, int lives) {
   player->x = x;
   player->y = y;
   player->frame = 0;
+  player->cristais = 0;
+  player->lives = lives;
 }
-
 
 void player_update(PLAYER *player, unsigned char *key, listaParede *lista,
                    listaTerra *listTerra, listaCristal *listCristal,
                    listaPedra *listPedra, listaMuro *listMuro,
                    listaQuadrado *listQuadrado, listaBorboleta *listBorboleta,
-                   listaAmoeba *listAmoeba, ALLEGRO_SAMPLE *moeda, int *score) {
+                   listaAmoeba *listAmoeba, ALLEGRO_SAMPLE *moeda, int *score,
+                   int *nivel, bool *carregaMapa, porta porta) {
 
   if (player->frame % 6 == 0) {
     int prox_x = player->x, prox_y = player->y;
@@ -43,6 +45,17 @@ void player_update(PLAYER *player, unsigned char *key, listaParede *lista,
       prox_x = player->x;
       prox_y = player->y;
     }
+
+    if (prox_x == porta.x && prox_y == porta.y) {
+      if (player->cristais < player->cristnec) {
+        prox_x = player->x;
+        prox_y = player->y;
+      } else {
+        *nivel = *nivel + 1;
+        *carregaMapa = true;
+      }
+    }
+
     if (findListaPedra(listPedra, prox_x, prox_y)) {
       if (posicaoLivre(prox_x + (dir * 16), prox_y, lista, listTerra,
                        listCristal, listPedra, listMuro, listQuadrado,
@@ -57,7 +70,12 @@ void player_update(PLAYER *player, unsigned char *key, listaParede *lista,
 
     removListaTerra(listTerra, prox_x, prox_y);
     if (removListaCristal(listCristal, prox_x, prox_y) == 0) {
-      *score=*score+100;
+      if (player->cristais < player->cristnec)
+        *score = *score + player->pont;
+      else
+        *score = *score + player->pont * 1.5;
+
+      player->cristais++;
       al_play_sample(moeda, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
     };
 
@@ -66,8 +84,6 @@ void player_update(PLAYER *player, unsigned char *key, listaParede *lista,
   }
   player->frame++;
 }
-
-
 
 void player_draw(PLAYER player, unsigned char *key, SPRITESBD spritesbd) {
 

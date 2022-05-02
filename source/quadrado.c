@@ -1,9 +1,10 @@
 #include "quadrado.h"
+#include <stdbool.h>
 
 void quadrado_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
                      listaCristal *listCristal, listaPedra *listPedra,
                      listaMuro *listMuro, listaQuadrado *listQuadrado,
-                     listaBorboleta *listBorboleta, listaAmoeba *listAmoeba) {
+                     listaBorboleta *listBorboleta, listaAmoeba *listAmoeba, bool *teste) {
 
   if (player->frame % 8 == 0) {
 
@@ -15,6 +16,9 @@ void quadrado_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
     for (int i = 1; i <= listQuadrado->tamanho; ++i) {
       prox_y = em_andamento->y;
       prox_x = em_andamento->x;
+
+
+
       if (em_andamento->dir == 1) { // direita
         if (posicaoLivre(em_andamento->x + 16, em_andamento->y, lista,
                          listTerra, listCristal, listPedra, listMuro,
@@ -74,8 +78,10 @@ void quadrado_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
       } else if (findListaPedra(listPedra, prox_x, prox_y)) {
         prox_y = em_andamento->y;
         prox_x = em_andamento->x;
-      } else if (em_andamento->x == player->x && prox_y == player->y)
-        prox_y = em_andamento->y;
+      } else if (em_andamento->x == player->x && prox_y == player->y){
+        *teste = true;
+      }
+        
 
       em_andamento->y = prox_y;
       em_andamento->x = prox_x;

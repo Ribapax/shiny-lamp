@@ -1,7 +1,7 @@
 #include "help.h"
 
 
-void help_draw(ALLEGRO_FONT *font) {
+void help_draw(ALLEGRO_FONT *font, int score) {
   al_draw_filled_rectangle(0, 0, BUFFER_W, BUFFER_H, al_map_rgba(0, 0, 0, 100));
   al_draw_filled_rectangle(TILE * 2, TILE * 3, BUFFER_W - TILE * 2,
                            BUFFER_H - TILE * 2,
@@ -19,6 +19,10 @@ void help_draw(ALLEGRO_FONT *font) {
   al_draw_multiline_text(
       font, al_map_rgb(0, 0, 0), TILE * 3, TILE * 11, BUFFER_W * 8 / 10, 16, 0,
       "- Use as teclas direcionais para mover o seu personagem.");
+  
+  al_draw_textf(
+      font, al_map_rgb(0, 0, 0), TILE * 3, TILE * 13, 0,
+      "- O ultimo score foi %d",score);
   /* al_draw_multiline_text(font, al_map_rgb(0, 0, 0), 340, 360, 600, 16, 0,
                          "- Press R to restart your level, but be aware that "
                          "you will lose one life.");*/

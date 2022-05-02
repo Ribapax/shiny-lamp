@@ -21,7 +21,7 @@ void cristal_draw(SPRITESBD spritesbd, listaCristal lista);
 void cristal_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
                     listaCristal *listCristal, listaPedra *listPedra,
                     listaMuro *listMuro, listaQuadrado *listQuadrado,
-                    listaBorboleta *listBorboleta, listaAmoeba *listAmoeba);
+                    listaBorboleta *listBorboleta, listaAmoeba *listAmoeba, bool *teste);
 
 
 

@@ -3,7 +3,7 @@
 void borboleta_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
                      listaCristal *listCristal, listaPedra *listPedra,
                      listaMuro *listMuro, listaQuadrado *listQuadrado,
-                     listaBorboleta *listBorboleta, listaAmoeba *listAmoeba) {
+                     listaBorboleta *listBorboleta, listaAmoeba *listAmoeba, bool *teste) {
 
   if (player->frame % 8 == 0) {
 
@@ -75,7 +75,7 @@ void borboleta_update(PLAYER *player, listaParede *lista, listaTerra *listTerra,
         prox_y = em_andamento->y;
         prox_x = em_andamento->x;
       } else if (em_andamento->x == player->x && prox_y == player->y)
-        prox_y = em_andamento->y;
+        *teste = true;
 
       em_andamento->y = prox_y;
       em_andamento->x = prox_x;

@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-
 bool posicaoLivre(int x, int y, listaParede *lista, listaTerra *listTerra,
                   listaCristal *listCristal, listaPedra *listPedra,
                   listaMuro *listMuro, listaQuadrado *listQuadrado,
@@ -26,7 +25,6 @@ bool posicaoLivre(int x, int y, listaParede *lista, listaTerra *listTerra,
   return true;
 }
 
-
 bool findListaTerra(listaTerra *lista, int x, int y) {
   terra *em_andamento;
 
@@ -38,7 +36,6 @@ bool findListaTerra(listaTerra *lista, int x, int y) {
   }
   return false;
 }
-
 
 bool findListaCristal(listaCristal *lista, int x, int y) {
   cristal *em_andamento;
@@ -52,7 +49,6 @@ bool findListaCristal(listaCristal *lista, int x, int y) {
   return false;
 }
 
-
 bool findListaMuro(listaMuro *lista, int x, int y) {
   muro *em_andamento;
 
@@ -64,7 +60,6 @@ bool findListaMuro(listaMuro *lista, int x, int y) {
   }
   return false;
 }
-
 
 int removListaTerra(listaTerra *lista, int x, int y) {
   int pos = -1;
@@ -105,7 +100,6 @@ int removListaTerra(listaTerra *lista, int x, int y) {
   return 0;
 }
 
-
 int removListaCristal(listaCristal *lista, int x, int y) {
   int pos = -1;
   cristal *remov_elemento, *em_andamento;
@@ -145,7 +139,6 @@ int removListaCristal(listaCristal *lista, int x, int y) {
   return 0;
 }
 
-
 void changeListaPedra(listaPedra *lista, int x, int y, int x_novo) {
   pedra *em_andamento;
 
@@ -160,8 +153,6 @@ void changeListaPedra(listaPedra *lista, int x, int y, int x_novo) {
   }
 }
 
-
-
 bool findListaParede(listaParede *lista, int x, int y) {
   parede *em_andamento;
 
@@ -173,7 +164,6 @@ bool findListaParede(listaParede *lista, int x, int y) {
   }
   return false;
 }
-
 
 bool findListaPedra(listaPedra *lista, int x, int y) {
   pedra *em_andamento;
@@ -187,5 +177,11 @@ bool findListaPedra(listaPedra *lista, int x, int y) {
   return false;
 }
 
+void porta_draw(SPRITESBD spritesbd, porta portal, PLAYER player) {
 
-
+  if (player.cristais<player.cristnec)
+    al_draw_bitmap(spritesbd.porta[0], portal.x, portal.y, 0);
+  else
+    al_draw_bitmap(spritesbd.porta[1], portal.x, portal.y, 0);
+  
+}
